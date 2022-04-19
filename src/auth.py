@@ -7,6 +7,7 @@ auth = Blueprint('auth', __name__)
 def login():
     return render_template("login.html")
 
+
 #@auth.route('/signup')
 #def signup():
  #   return 'Signup'
