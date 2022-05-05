@@ -17,6 +17,12 @@ def index():
 def login():
     return render_template("login.html")
 
+
+@app.route("/profile/", subdomain ='addstudent')
+def addstudent():
+    return render_template("addstudent.html")
+
+
 @app.route("/profile", methods = ['POST'])
 def profile():
     return render_template("profile.html")
