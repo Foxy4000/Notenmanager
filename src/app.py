@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, Blueprint
 from flask import Flask, render_template, Blueprint, session
+from flask_sqlalchemy import SQLAlchemy
 #from . import db
 
 #Create a Flask Instance
 app = Flask(__name__)
 main = Blueprint('main', __name__)
 app.secret_key = "secret key"
+
+#Add Database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+#Initialize Database
+db = SQLAlchemy(app)
 
 
 #Create a route decorator
@@ -31,6 +37,16 @@ def logout():
 def profile():
     session['logged_in'] = True
     return render_template("profile.html")
+
+
+#Test
+class Lehrer(db.Model):
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    email = db.Column(db.String(100), unique=True)
+    passwort = db.Column(db.String(100), nullable=True)
+    vorname = db.Column(db.String(120), nullable=True)
+    nachname = db.Column(db.String(120), nullable=True)
+    ist_administrator = db.Column(db.Boolean, nullable=True)
 
 
 
