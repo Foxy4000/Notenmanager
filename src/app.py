@@ -25,10 +25,11 @@ def login():
 @app.route('/logout')
 def logout():
     session['logged_in'] = False
-    return render_template("profile.html")
+    return render_template("index.html")
 
 @app.route("/profile", methods = ['POST'])
 def profile():
+    session['logged_in'] = True
     return render_template("profile.html")
 
 
