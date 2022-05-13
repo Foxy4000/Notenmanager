@@ -3,6 +3,16 @@
 
     {% extends 'base.html' %}
     {% block content %}
+    
+	{% for message in get_flashed_messages() %}
+	
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	 		{{ message }}
+	  		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+		
+		
+	{% endfor %}
 
         <link href="{{url_for('static', filename='css/profile.css')}}" rel="stylesheet">
 
@@ -78,13 +88,14 @@
                                             </ul>
                                         </div>
                                     </div>
-                                </form>
                             </div>
                         </div>
                     </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-                            <button type="button" class="btn btn-primary" style="background-color: #006633;">SchülerIn hinzufügen</button>
+                        
+                            <input type="submit" name="submit1" class="btn btn-primary" value="Schüler hinzufügen" style="background-color: #006633;"</input>
+                            </form>
                         </div>
                     </div>
                 </div>
