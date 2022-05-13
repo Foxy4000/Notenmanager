@@ -27,33 +27,92 @@
 
             <form class="d-flex">
                 <div class="me-2">
-                  <li class="nav-item dropdown d-flex justify-content-between align-items-center">
-                  <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-person-circle" viewBox="0 0 17 17">
-                          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                      </svg>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                      {% if session['logged_in'] %}
-                    <li><a class="dropdown-item" href="\logout">Logout</a></li>
-                      {% else %}
-                    <li><a class="dropdown-item" href="\login">Login</a></li>
-                      {% endif %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-                </li>
+                    <li class="nav-item dropdown d-flex justify-content-between align-items-center">
+                        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white"
+                                 class="bi bi-person-circle" viewBox="0 0 17 17">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                <path fill-rule="evenodd"
+                                      d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                            </svg>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            {% if session['logged_in'] %}
+                            <li><a class="dropdown-item" href="\logout">Logout</a></li>
+                            {% else %}
+                            <li><a class="dropdown-item" href="\login">Login</a></li>
+                            {% endif %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <a href="#registrierung" class="dropdown-item" data-toggle="modal"
+                               data-target="#registrierung">Registrierung</a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
                 </div>
             </form>
 
             <form class="d-flex">
-            {% if session['logged_in'] %}
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            {% endif %}
+                {% if session['logged_in'] %}
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+                {% endif %}
             </form>
 
         </div>
+    </div>
+
+    <!--create Account-->
+    <div class="modal fade" id="registrierung" tabindex="-1" role="dialog" aria-labelledby="registrierungTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form class="container">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registrierungTitle">Account Registrieren</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="post" action="submitAccount">
+                        <label for="firstname">Vorname:</label>
+                        <input class="form-control" name="firstname" id="firstname" placeholder="Vorname"
+                               required="required" minlength="2">
+
+                        <label for="lastname">Nachname:</label>
+                        <input class="form-control" name="lastname" id="lastname" placeholder="Nachname">
+
+                        <label for="e-mail">E-Mail:</label>
+                        <input class="form-control" name="e-mail" id="e-mail"
+                               placeholder="E-Mail">
+
+                        <label for="password">Passwort:</label>
+                        <input type="password" class="form-control" name="password" id="password">
+
+                        <label for="password_repeat">Passwort wiederholen:</label>
+                        <input type="password" class="form-control" name="password_repeat" id="password_repeat"
+                               placeholder="Passwort wiederholen">
+
+                        <input type="checkbox" id="isAdmin" name="AdminAccountCheckbox">
+                        <label for="isAdmin">als Admin Account anlegen</label>
+                    </form>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                        <button type="button" class="btn btn-primary" style="background-color: #006633;">Account
+                            registrieren
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
     </div>
 </nav>
