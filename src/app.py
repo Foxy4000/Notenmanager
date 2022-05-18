@@ -52,6 +52,7 @@ def profile():
 
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
+
         if request.form.get('mathe') == 'Mathe':
             fach_id = request.form.get('mathe')
             belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)
