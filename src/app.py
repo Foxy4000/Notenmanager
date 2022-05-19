@@ -80,6 +80,10 @@ def deleteStudent(student_id):
     flash(schueler.vorname + " " + schueler.nachname + " wurde entfernt")
     return redirect(url_for('profile'))
 
+@app.route("/register")
+def register():
+    session['logged_in'] = True
+    return render_template("register.html")
 
 class Lehrer(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
