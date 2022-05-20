@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, Blueprint, session, request, flash, url_for, redirect
+from flask import Flask, render_template, Blueprint, session, request, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import redirect
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, Length
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 
 # from . import db
 
@@ -9,7 +14,7 @@ from sqlalchemy.orm import Session
 
 app = Flask(__name__)
 main = Blueprint('main', __name__)
-app.secret_key = "secret key"
+app.config['SECRET_KEY'] = "my super secret key"
 
 # Add Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -17,30 +22,79 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 # Initialize Database
 db = SQLAlchemy(app)
 
+# Flask_Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Lehrer.query.get(int(user_id))
+
 
 # Create a route decorator
 @app.route("/")
 def index():
-    # session['logged_in'] = False erst wenn der Button geklickt wird (Funktion noch nicht implementiert)
-    session['logged_in'] = False
     return render_template("index.html")
 
 
-@app.route("/login")
+@app.route("/login", methods=['POST', 'GET'])
 def login():
-    session['logged_in'] = True
+    if request.form.get('submit') == 'Login':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        # Look up User by Email Address
+        user = Lehrer.query.filter_by(email=email).first()
+        if user:
+            # Check hashed password
+            if check_password_hash(user.passwort, password):
+            #if user.passwort == password:
+                login_user(user)
+                flash("Login successful!")
+                return redirect(url_for('profile'))
+            else:
+                flash("Wrong Password - TryAgain!")
+        else:
+            flash("That User does not exist! Try again...")
     return render_template("login.html")
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST', 'GET'])
+@login_required
 def logout():
-    session['logged_in'] = False
+    logout_user()
+    flash("You have been logged out!")
     return render_template("index.html")
 
 
+@app.route("/register", methods=['POST', 'GET', 'DELETE'])
+@login_required
+def register():
+    if request.form.get('submit5') == 'Account registrieren':
+        vorname = request.form.get('firstname')
+        nachname = request.form.get('lastname')
+        email = request.form.get('email')
+        passwort = request.form.get('password')
+        lehrer = Lehrer.query.filter_by(email=email).first()
+        if lehrer is None:
+            # Hash the password
+            hashed_pw = generate_password_hash(passwort, "sha256")
+            if request.form.get('isadmin') == "on":
+                isadmin = True
+            else:
+                isadmin = False
+            lehrer = Lehrer(email=email, passwort=hashed_pw, vorname=vorname, nachname=nachname, ist_administrator=isadmin)
+            db.session.add(lehrer)
+            db.session.commit()
+            flash("Teacher succesfully registrated!")
+        else:
+            flash("Teacher already registrated")
+    return render_template("profile.html")
+
+
 @app.route("/profile", methods=['POST', 'GET', 'DELETE'])
+@login_required
 def profile():
-    # session['logged_in'] = True
     if request.form.get('submit1') == 'Schüler hinzufügen':
         vorname = request.form.get('name')
         nachname = request.form.get('surname')
@@ -71,6 +125,7 @@ def profile():
 
 
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])
+@login_required
 def deleteStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
     # belegungen = Belegung.query.filter.by(schueler_id=student_id)
@@ -80,13 +135,25 @@ def deleteStudent(student_id):
     flash(schueler.vorname + " " + schueler.nachname + " wurde entfernt")
     return redirect(url_for('profile'))
 
-class Lehrer(db.Model):
+class Lehrer(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
     passwort = db.Column(db.String(100), nullable=True)
     vorname = db.Column(db.String(120), nullable=True)
     nachname = db.Column(db.String(120), nullable=True)
     ist_administrator = db.Column(db.Boolean, nullable=True)
+
+    # Passwort
+    #@property
+    #def passwort(self):
+     #   raise AttributeError('Password is not a readable Attribute!')
+
+    #@passwort.setter
+    #def passwort(self, pwd):
+     #   self.passwort = generate_password_hash(pwd)
+
+    #def verify_password(self, pwd):
+     #   return check_password_hash(self.passwort, pwd)
 
 
 class Schueler(db.Model):
