@@ -135,6 +135,24 @@ def deleteStudent(student_id):
     flash(schueler.vorname + " " + schueler.nachname + " wurde entfernt")
     return redirect(url_for('profile'))
 
+@app.route('/profile/deleteClass/<klasse_id>', methods=['POST', 'GET'])
+@login_required
+def deleteClass(klasse_id):
+    if current_user.ist_administrator:  
+        schuelerListe = Schueler.query.filter_by(klasse_id=klasse_id)
+        for schueler in schuelerListe:
+            schueler.klasse_id=None
+            db.session.add(schueler)
+            db.session.commit(schueler)
+        klasse = Klasse.query.get_or_404(klasse_id)    
+        db.session.delete(klasse)
+        db.session.commit()
+        flash("Klasse " + klasse.bezeichnung + " wurde entfernt")
+    else:
+        flash("Keine Berechtigung!")
+    return redirect(url_for('profile'))
+
+
 class Lehrer(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
@@ -171,7 +189,7 @@ class Belegung(db.Model):
 class Klasse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bezeichnung = db.Column(db.String(100), unique=True)
-    schueler_id = db.Column(db.Integer, nullable=True)  # foreign key of student
+    lehrer_id = db.Column(db.Integer, nullable=True)  # foreign key of teacher
 
 
 class Bewertung(db.Model):

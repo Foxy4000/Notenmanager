@@ -46,7 +46,10 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                                 <a href="#edit" class="dropdown-item" data-toggle="modal"
-                                                   data-target="#bearbeiten">bearbeiten</a>
+                                                   data-target="#bearbeiten">bearbeiten</a>      
+                                                <form method="POST">
+                                                	<a href="{{ url_for('deleteClass', klasse_id=1) }}" class="dropdown-item" onclick="return confirm('Klasse endgültig löschen?')">Klasse löschen</a>
+                                                </form>                                                    
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
