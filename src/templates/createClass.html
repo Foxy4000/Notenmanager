@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+    {% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="modal fade" id="klasseAnlegen" tabindex="-1" role="dialog" aria-labelledby="klasseAnlegenTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form class="container">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="klasseAnlegenTitle">Klasse anlegen</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="post" action="submitClass">
+                        <label for="className">Klassenname:</label>
+                        <input class="form-control" name="className" id="className" placeholder="Klassenname mit Jahreszahl (z.B. 1a 21/22)"
+                               required="required" minlength="2">
+
+                        <label for="classTeacher">Klassenlehrer:</label>
+                        <input class="form-control" name="classTeacher" id="classTeacher" placeholder="Klassenlehrer">
+
+                        <label for="studentsInClass">Schüler:</label>
+                        <input class="form-control" name="studentsInClass" id="studentsInClass" placeholder="Schüler">
+                    </form>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                        <button type="button" class="btn btn-primary" style="background-color: #006633;">Klasse erstellen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</body>
+    {% endblock %}
+</html>
