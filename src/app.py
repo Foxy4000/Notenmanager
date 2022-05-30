@@ -124,6 +124,47 @@ def profile():
     return render_template("profile.html", schuelerList=schuelerList)
 
 
+@app.route("/createSubject", methods=['POST', 'GET'])
+@login_required
+def createSubject():
+    if request.form.get('submit1') == 'Änderungen speichern':
+        if current_user.ist_administrator:
+            bezeichnung = request.form.get('subjectName')
+            lehrer_bez = request.form.get('subjectTeacher')
+            lehrer = Lehrer.query.filter_by(bezeichnung=lehrer_bez)
+            subject = Subject(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
+            db.session.add(subject)
+            db.session.commit()
+
+            subject = Subject.query.order_by(Subject.id.desc()).first()
+            subject_id = subject.id
+
+            # in der Suche müssen Vorschläge anhand der bisherigen Eingaben gemacht werden
+            # über die Suche gefundene und hinzuzufügende Studenten und Prüfungen müssen in Liste gespeichert werden
+
+            studentList = request.form.get('studentsInSubject')
+            for student in studentList:
+                belegung = Belegung(schueler_id=student.id, fach_id=subject_id)
+                db.session.add(belegung)
+                db.session.commit()
+
+            examList = request.form.get('examsInSubject')
+            for exam in examList:
+                pruefung = Subject.query.get_or_404(exam.id)
+                #if pruefung.fach_id is None:
+                pruefung.fach_id = subject_id
+                db.session.add(pruefung)
+                db.session.commit()
+                #else:...
+
+            flash("Fach " + subject.bezeichnung + " wurde hinzugefügt")
+        else:
+            flash("Keine Berechtigung!")
+
+    subjectList = Subject.query.all()
+    return render_template("profile.html", subjectList=subjectList)
+
+
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])
 @login_required
 def deleteStudent(student_id):
@@ -196,6 +237,20 @@ class Bewertung(db.Model):
     fach_id = db.Column(db.Integer, primary_key=True)
     schueler_id = db.Column(db.Integer, primary_key=True)
     punkte = db.Column(db.Integer, nullable=True)
+
+
+class Subject(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    bezeichnung = db.Column(db.String(100), unique=True)
+    lehrer_id = db.Column(db.Integer, nullable=True)  # foreign key of teacher
+
+
+class Pruefung(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    bezeichnung = db.Column(db.String(100), unique=True)
+    notizen = db.Column(db.String(100), unique=True)
+    fach_id = db.Column(db.Integer, primary_key=True)
+
 
 
 app.run(debug=True)

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fach anlegen</title>
+</head>
+<body>
+    <div class="modal fade" id="subjectAnlegen" tabindex="-1" role="dialog" aria-labelledby="subjectAnlegenTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subjectAnlegenTitle">Fach anlegen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="column is-4 is-offset-4">
+                        <div class="box">
+                            <form method="post" action="submitSubject">
+                                <div class="mb-3">
+
+                                    <label for="subjectName">Fach:</label>
+                                    <input class="form-control" name="subjectName" id="subjectName" placeholder="Fach"
+                                           required="required" minlength="2">
+
+                                    <label for="subjectTeacher">Lehrer:</label>
+                                    <input class="form-control" name="subjectTeacher" id="subjectTeacher" placeholder="Lehrer">
+
+                                    <label for="studentsInSubject">Schüler:</label>
+                                    <input class="form-control" name="studentsInSubject" id="studentsInSubject" placeholder="Schüler" type="text" data-provide="typeahead" autocomplete="off">
+
+                                    <label for="examsInSubject">Prüfungen:</label>
+                                    <input class="form-control" name="examsInSubject" id="examsInSubject" placeholder="Prüfungen">
+
+
+                                    {%for subject in subjectList%}
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0" style="width:400px">{{subject.bezeichnung}}</h6>
+                                        <h6>1a</h6>
+                                        <div>
+                                            <a class="nav-link" href="#" id="subjectDropdown" role="button dropend"
+                                               data-bs-toggle="dropdown"
+                                               aria-expanded="false">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="black"
+                                                     class="bi bi-three-dots" viewBox="0 0 16 16">
+                                                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </li>
+                                    <hr>
+                                    {%endfor%}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                        <input type="submit" name="submit1" class="btn btn-primary" value="Änderungen speichern" style="background-color: #006633;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
