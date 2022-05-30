@@ -3,9 +3,12 @@
     {% include 'createClass.html' %}
     {% include 'createSubject.html' %}
     {% include 'editClass.html' %}
+    {% include 'editstudent.html'%}
+    {% include 'addstudent.html'%}
     {% extends 'base.html' %}
+
     {% block content %}
-    
+
 	{% for message in get_flashed_messages() %}
 	
 		<div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -72,7 +75,6 @@
                                             </ul>
                                       </li>
                                       <hr>
-
                                       <!--for schleife end-->
                                   </ul>
                             </div>
@@ -80,7 +82,7 @@
                       </div>
             </div>
             <div class="col-4">
-                  <div class="card" >
+                  <div class="card" style="height: 300px">
                     <div class="card-body">
                       <div class="d-flex flex-column align-items-center text-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -88,9 +90,11 @@
                             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
                         </svg>
                         <div class="mt-3">
-                          <h4>Herr Lehrer</h4>
+                          <h4>{{lehrer.vorname}} {{lehrer.nachname}}</h4>
                             <!--only show when teacher is admin-->
+                            {%if lehrer.ist_administrator%}
                             <h6 style="font-style: italic">Admin </h6>
+                            {%endif%}
                             <ul style="list-style: none; padding-left: 0px">
 
                                 <li class="mb-1">
@@ -98,13 +102,16 @@
                                         Profil bearbeiten
                                     </button>
                                 </li>
-
+                                {%if lehrer.ist_administrator%}
                                 <li class="mb-1">
-                                    <button type="button" class="btn btn-primary btn-sm" style="background-color: #006633; color: white" data-toggle="modal" data-target="#exampleModalCenter" align="center" justify>
-                                        SchülerIn hinzufügen
+                                    <button type="button" class="btn btn-primary btn-sm"
+                                            style="background-color: #006633; color: white" align="center"
+                                            justify data-toggle="modal" data-target="#addStudent" >
+                                            SchülerIn hinzufügen
+
                                     </button>
                                 </li>
-
+                                {%endif%}
                                 <li class="mb-1">
                                     <button type="button" class="btn btn-primary btn-sm" style="background-color: #006633; color: white";>
                                         <a style="background-color: #006633; color: white" href="\logout">Abmelden</a>
@@ -120,6 +127,7 @@
 
     <div class="row justify-content-between">
          <div class="col-md-6">
+
              <div class="card-header">
                  <div class="d-flex justify-content-between align-items-center">
                      <h5>Fächer</h5>
@@ -134,59 +142,62 @@
                  </div>
              </div>
 
-             <div class="card mb-3">
+                 <div class="card mb-3">
 
-                 <ul class="card-body"style="overflow-y: auto; max-height: 300px">
-                  <div class="row">
-                      <div>
-                          <ul style="list-style: none; padding-left: 0px">
-                              <!--hier for-Schleife einfügen-->
-                              <li class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0" style="width:400px">Mathe</h6>
-                                    <h6>Anzahl Schüler</h6>
-                                    <div>
-                                         <a class="nav-link" href="#"  role="button dropend" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="black" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                                            </svg>
-                                         </a>
+                     <ul class="card-body"style="overflow-y: auto; max-height: 300px">
+                      <div class="row">
+                          <div>
+                              <ul style="list-style: none; padding-left: 0px">
+                                  <!--hier for-Schleife einfügen-->
+                                  <li class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0" style="width:400px">Mathe</h6>
+                                        <h6>Anzahl Schüler</h6>
+                                        <div>
+                                             <a class="nav-link" href="#"  role="button dropend" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="black" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                                </svg>
+                                             </a>
 
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                            <a href="#edit" class="dropdown-item" data-toggle="modal"
-                                               data-target="#bearbeiten">bearbeiten</a>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li><a class="dropdown-item" href="#">Kurs exportieren</a></li>
-                                        </ul>
-                                    </div>
-                              </li>
-                              <hr>
-                            </ul>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                                <a href="#edit" class="dropdown-item" data-toggle="modal"
+                                                   data-target="#bearbeiten">bearbeiten</a>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item" href="#">Kurs exportieren</a></li>
+                                            </ul>
+                                        </div>
+                                  </li>
+                                  <hr>
+                                  <!--end for-->
+                                </ul>
+                          </div>
                       </div>
-                  </div>
-              </div>
-    </div>
+                     </ul>
+                 </div>
+         </div>
+
         <div class="col-md-6">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5>Schüler</h5>
-                <h5>{{schuelerList|count}}</h5>
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5>Schüler</h5>
+                    <h5>{{schuelerList|count}}</h5>
+                </div>
+
             </div>
 
-        </div>
-
              <div class="card ">
-
                  <ul class="card-body" style="overflow-y: auto; max-height: 300px">
-                  <div class="row">
+                     <div class="row">
                       <div>
                           <ul style="list-style: none; padding-left: 0px">
                                 {%for schueler in schuelerList%}
                                       <li class="d-flex justify-content-between align-items-center">
                                           <h6 class="mb-0" style="width:400px">{{schueler.vorname}} {{schueler.nachname}}</h6>
                                           <h6>1a</h6>
+                                          {%if lehrer.ist_administrator%}
                                            <div>
                                                 <a class="nav-link" href="#" id="studentDropdown" role="button dropend" data-bs-toggle="dropdown"
                                                     aria-expanded="false">
@@ -195,117 +206,39 @@
                                                     </svg>
                                                 </a>
                                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                                    <li>
-                                                        <a href="#edit" class="dropdown-item" data-toggle="modal"
-                                                        data-target="#bearbeiten">bearbeiten</a>
+
+                                                     <li>
+                                                        <a class="dropdown-item" data-toggle="modal" data-target="#editStudent {{ schueler.id }}">bearbeiten</a>
                                                     </li>
                                                     <li>
                                                         <hr class="dropdown-divider">
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" >
+                                                        <a class="dropdown-item">
                                                             <form method="POST"
                                                                 action="{{ url_for('deleteStudent', student_id=schueler.id) }}">
-                                                                <input type="submit" class="dropdown-item" value="Schüler löschen"
+                                                                <input type="submit" class="dropdown-item" style="padding: 0px" value="Schüler löschen"
                                                                     onclick="return confirm('SchülerIn {{schueler.vorname}} {{schueler.nachname}} endgültig löschen?')">
                                                             </form>
                                                         </a>
                                                     </li>
                                                 </ul>
+
                                             </div>
+                                          {%endif%}
                                       </li>
+                              <hr>
 
                               {%endfor%}
                           </ul>
-
                       </div>
-                </ul>
+                      </div>
+                    </ul>
               </div>
+        </div>
     </div>
-    </div>
 
 
-        <!--add student modal -->
-            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">SchülerIn hinzufügen</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    <div class="modal-body">
-                        <div class="column is-4 is-offset-4">
-                            <div class="box">
-                                <form method="post" action="profile">
-                                    <div class="mb-3">
-                                        <label for="name">Vorname:</label>
-                                        <input class="form-control" name="name" id="name"
-                                               placeholder="Vorname der SchülerIn" required="required">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="surname">Nachname:</label>
-                                        <input class="form-control" type="surname" name="surname" id="surname"
-                                               placeholder="Nachname der SchülerIn" required="required">
-                                    </div>
-
-                                    <div class="d-flex justify-content-around" >
-                                        <div class="dropdown">
-                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Klasse auswählen
-                                            </button>
-
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                 <!--only temporary list; need backend call to list all available classes in for-loop -->
-                                                <div class="dropdown-item">
-                                                    <li>
-                                                        <input class="form-check-input" type="checkbox" value="klassen" aria-label="...">
-                                                        1a
-                                                    </li>
-                                                </div>
-
-                                            </ul>
-
-                                            </div>
-
-                                        <div class="dropdown">
-                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                wähle Fächer
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                <!--only temporary list; need backend call to list all available courses -->
-                                                <div class="dropdown-item">
-                                                    <li>
-                                                        <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
-                                                        <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                            Mathe
-                                                    </li>
-                                                </div>
-
-                                                <div class="dropdown-item">
-                                                    <li>
-                                                        <input class="form-check-input me-1" name="deutsch" type="checkbox" value="Deutsch" aria-label="...">
-                                                        <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                        Deutsch
-                                                    </li>
-                                                </div>
-                                            </ul>
-                                        </div>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-                        
-                            <input type="submit" name="submit1" class="btn btn-primary" value="Schüler hinzufügen" style="background-color: #006633;">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
 
 
 

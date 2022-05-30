@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import json
+
 from flask import Flask, render_template, Blueprint, session, request, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import redirect
@@ -27,6 +29,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return Lehrer.query.get(int(user_id))
@@ -48,7 +51,7 @@ def login():
         if user:
             # Check hashed password
             if check_password_hash(user.passwort, password):
-            #if user.passwort == password:
+                # if user.passwort == password:
                 login_user(user)
                 flash("Login successful!")
                 return redirect(url_for('profile'))
@@ -83,7 +86,8 @@ def register():
                 isadmin = True
             else:
                 isadmin = False
-            lehrer = Lehrer(email=email, passwort=hashed_pw, vorname=vorname, nachname=nachname, ist_administrator=isadmin)
+            lehrer = Lehrer(email=email, passwort=hashed_pw, vorname=vorname, nachname=nachname,
+                            ist_administrator=isadmin)
             db.session.add(lehrer)
             db.session.commit()
             flash("Teacher succesfully registrated!")
@@ -120,8 +124,29 @@ def profile():
             db.session.commit()
 
     schuelerList = Schueler.query.all()
+    lehrer = Lehrer.query.get_or_404(current_user.id)
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
-    return render_template("profile.html", schuelerList=schuelerList)
+    return render_template("profile.html", schuelerList=schuelerList, lehrer=lehrer)
+
+
+@app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
+def editStudent(student_id):
+    schueler = Schueler.query.get_or_404(student_id)
+    schueler_alt = schueler
+    # belegung = Belegung.query.get_or_404(student_id)
+    if request.method == 'POST':
+        firstname = request.form.get('vorname')
+        lastname = request.form.get('nachname')
+
+        # schueler.klasse_id = request.form['klasse_id']
+        # belegung.fach_id = request.form['fach_id']
+        schueler.vorname = firstname
+        schueler.nachname = lastname
+        db.session.add(schueler)
+        db.session.commit()
+        flash(schueler_alt.vorname + " " + schueler_alt.nachname + " wurde bearbeitet")
+
+    return redirect(url_for('profile'))
 
 
 @app.route("/createSubject", methods=['POST', 'GET'])
@@ -176,16 +201,17 @@ def deleteStudent(student_id):
     flash(schueler.vorname + " " + schueler.nachname + " wurde entfernt")
     return redirect(url_for('profile'))
 
+
 @app.route('/profile/deleteClass/<klasse_id>', methods=['POST', 'GET'])
 @login_required
 def deleteClass(klasse_id):
-    if current_user.ist_administrator:  
+    if current_user.ist_administrator:
         schuelerListe = Schueler.query.filter_by(klasse_id=klasse_id)
         for schueler in schuelerListe:
-            schueler.klasse_id=None
+            schueler.klasse_id = None
             db.session.add(schueler)
             db.session.commit(schueler)
-        klasse = Klasse.query.get_or_404(klasse_id)    
+        klasse = Klasse.query.get_or_404(klasse_id)
         db.session.delete(klasse)
         db.session.commit()
         flash("Klasse " + klasse.bezeichnung + " wurde entfernt")
@@ -203,16 +229,16 @@ class Lehrer(db.Model, UserMixin):
     ist_administrator = db.Column(db.Boolean, nullable=True)
 
     # Passwort
-    #@property
-    #def passwort(self):
-     #   raise AttributeError('Password is not a readable Attribute!')
+    # @property
+    # def passwort(self):
+    #   raise AttributeError('Password is not a readable Attribute!')
 
-    #@passwort.setter
-    #def passwort(self, pwd):
-     #   self.passwort = generate_password_hash(pwd)
+    # @passwort.setter
+    # def passwort(self, pwd):
+    #   self.passwort = generate_password_hash(pwd)
 
-    #def verify_password(self, pwd):
-     #   return check_password_hash(self.passwort, pwd)
+    # def verify_password(self, pwd):
+    #   return check_password_hash(self.passwort, pwd)
 
 
 class Schueler(db.Model):

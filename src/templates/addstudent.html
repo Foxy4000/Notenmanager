@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+     {% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+          <div class="modal fade" id="addStudent" tabindex="-1" role="dialog" aria-labelledby="addStudentTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                         <div class="modal-header">
+                            <h5 class="modal-title" id="addStudentTitle">SchülerIn hinzufügen</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post" action="profile">
+                            <div class="modal-body">
+                                 <div class="column is-4 is-offset-4">
+                                    <div class="box">
+
+                                            <div class="mb-3">
+                                                <label for="name">Vorname:</label>
+                                                <input class="form-control" name="name" id="name" placeholder="Vorname der SchülerIn" required="required">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="surname">Nachname:</label>
+                                                <input class="form-control" type="surname" name="surname" id="surname" placeholder="Nachname der SchülerIn" required="required">
+                                           </div>
+
+                                            <div class="d-flex justify-content-around" >
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Klasse auswählen
+                                                    </button>
+
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                         <!--only temporary list; need backend call to list all available classes in for-loop -->
+                                                        <div class="dropdown-item">
+                                                            <li>
+                                                                <input class="form-check-input" type="checkbox" value="klassen" aria-label="...">
+                                                                1a
+                                                            </li>
+                                                        </div>
+
+                                                    </ul>
+
+                                                    </div>
+
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        wähle Fächer
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                        <!--only temporary list; need backend call to list all available courses -->
+                                                        <div class="dropdown-item">
+                                                            <li>
+                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                    Mathe
+                                                            </li>
+                                                        </div>
+
+                                                        <div class="dropdown-item">
+                                                            <li>
+                                                                <input class="form-check-input me-1" name="deutsch" type="checkbox" value="Deutsch" aria-label="...">
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                Deutsch
+                                                            </li>
+                                                        </div>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+
+                                <input type="submit" name="submit1" class="btn btn-primary" value="Schüler hinzufügen" style="background-color: #006633;">
+
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+            </div>
+</body>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    {% endblock %}
+</html>
