@@ -33,22 +33,22 @@
 
                                             <div class="d-flex justify-content-around" >
                                                 <div class="dropdown">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                         Klasse auswählen
                                                     </button>
-
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                         <!--only temporary list; need backend call to list all available classes in for-loop -->
+                                                        <!--only temporary list; need backend call to list all available courses -->
+                                                        {% for klasse in klassenListe %}
                                                         <div class="dropdown-item">
                                                             <li>
-                                                                <input class="form-check-input" type="checkbox" value="klassen" aria-label="...">
-                                                                1a
+                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                    {{klasse.bezeichnung}}
                                                             </li>
                                                         </div>
-
+                                                        {% endfor %}
                                                     </ul>
-
-                                                    </div>
+                                                </div>
 
                                                 <div class="dropdown">
                                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -56,21 +56,15 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                                         <!--only temporary list; need backend call to list all available courses -->
+                                                        {% for fach in faecherListe %}
                                                         <div class="dropdown-item">
                                                             <li>
                                                                 <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
                                                                 <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                                    Mathe
+                                                                    {{fach.bezeichnung}}
                                                             </li>
                                                         </div>
-
-                                                        <div class="dropdown-item">
-                                                            <li>
-                                                                <input class="form-check-input me-1" name="deutsch" type="checkbox" value="Deutsch" aria-label="...">
-                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                                Deutsch
-                                                            </li>
-                                                        </div>
+                                                        {% endfor %}
                                                     </ul>
                                                 </div>
                                             </div>

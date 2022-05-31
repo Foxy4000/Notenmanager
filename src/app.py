@@ -107,10 +107,11 @@ def profile():
         schueler = Schueler(vorname=vorname, nachname=nachname, klasse_id=klasse_id)
         db.session.add(schueler)
         db.session.commit()
+        
         flash(vorname + " " + nachname + " wurde hinzugefügt!")
-
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
+
         if request.form.get('mathe') == 'Mathe':
             fach_id = request.form.get('mathe')
             belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)
@@ -123,10 +124,14 @@ def profile():
             db.session.add(belegung)
             db.session.commit()
 
+    belegungListe = Belegung.query.all()
+    klassenListe = Klasse.query.all()
+    faecherListe = Fach.query.all()
+    faecherBesucht = []
     schuelerList = Schueler.query.all()
     lehrer = Lehrer.query.get_or_404(current_user.id)
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
-    return render_template("profile.html", schuelerList=schuelerList, lehrer=lehrer)
+    return render_template("profile.html", schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, lehrer=lehrer)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
@@ -157,11 +162,11 @@ def createSubject():
             bezeichnung = request.form.get('subjectName')
             lehrer_bez = request.form.get('subjectTeacher')
             lehrer = Lehrer.query.filter_by(bezeichnung=lehrer_bez)
-            subject = Subject(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
+            subject = Fach(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
             db.session.add(subject)
             db.session.commit()
 
-            subject = Subject.query.order_by(Subject.id.desc()).first()
+            subject = Fach.query.order_by(Fach.id.desc()).first()
             subject_id = subject.id
 
             # in der Suche müssen Vorschläge anhand der bisherigen Eingaben gemacht werden
@@ -175,7 +180,7 @@ def createSubject():
 
             examList = request.form.get('examsInSubject')
             for exam in examList:
-                pruefung = Subject.query.get_or_404(exam.id)
+                pruefung = Fach.query.get_or_404(exam.id)
                 #if pruefung.fach_id is None:
                 pruefung.fach_id = subject_id
                 db.session.add(pruefung)
@@ -186,7 +191,7 @@ def createSubject():
         else:
             flash("Keine Berechtigung!")
 
-    subjectList = Subject.query.all()
+    subjectList = Fach.query.all()
     return render_template("profile.html", subjectList=subjectList)
 
 
@@ -265,7 +270,7 @@ class Bewertung(db.Model):
     punkte = db.Column(db.Integer, nullable=True)
 
 
-class Subject(db.Model):
+class Fach(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bezeichnung = db.Column(db.String(100), unique=True)
     lehrer_id = db.Column(db.Integer, nullable=True)  # foreign key of teacher

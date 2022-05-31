@@ -34,17 +34,30 @@
 
                                             <div class="d-flex justify-content-around" >
                                                 <div class="dropdown">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                                         Klasse auswählen
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                         <!--only temporary list; need backend call to list all available classes in for-loop -->
+                                                        <!--only temporary list; need backend call to list all available courses -->
+                                                        {% for klasse in klassenListe %}
+                                                        {% if schueler.klasse_id == klasse.id %}
                                                         <div class="dropdown-item">
                                                             <li>
-                                                                <input class="form-check-input" type="checkbox" value="klassen" aria-label="...">
-                                                                1a
+                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="..." checked>
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                    {{klasse.bezeichnung}}
                                                             </li>
                                                         </div>
+                                                        {% else %}
+                                                        <div class="dropdown-item">
+                                                            <li>
+                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                    {{klasse.bezeichnung}}
+                                                            </li>
+                                                        </div>
+                                                        {% endif %}
+                                                        {% endfor %}
                                                     </ul>
                                                 </div>
 
@@ -54,21 +67,46 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                                         <!--only temporary list; need backend call to list all available courses -->
-                                                        <div class="dropdown-item">
-                                                            <li>
-                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
-                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                                    Mathe
-                                                            </li>
-                                                        </div>
-
-                                                        <div class="dropdown-item">
-                                                            <li>
-                                                                <input class="form-check-input me-1" name="deutsch" type="checkbox" value="Deutsch" aria-label="...">
-                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                                Deutsch
-                                                            </li>
-                                                        </div>
+                                                        {% set ns = namespace(found=false) %}
+                                                        {% for belegung in belegungListe %}
+	                                                        {% if schueler.id == belegung.schueler_id%}
+	                                                        {% set ns.found = true %}
+		                                                        {% for fach in faecherListe %}
+			                                                        {% if fach.id == belegung.fach_id %}
+			                                                        <div class="dropdown-item">
+			                                                            <li>
+			                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="..." checked>
+			                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+			                                                                    {{fach.bezeichnung}}
+			                                                            </li>
+			                                                        </div>	
+			                                                        {% set faecherBesucht = faecherBesucht.append(fach) %}		                                                    
+			                                                        {% endif %}
+		                                                        {% endfor %}		                                                        
+		                                                	{% endif %}                                 	
+                                                        {% endfor %}                                                          
+                                                        {% for fach in faecherListe %}                                                   
+	                                                        {% if fach not in faecherBesucht %}
+				                                                        <div class="dropdown-item">
+				                                                            <li>
+				                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+				                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+				                                                                    {{fach.bezeichnung}}
+				                                                            </li>
+				                                                        </div>
+				                                             {% endif %}
+			                                             {% endfor %}    			                                             
+			                                             {% if not ns.found %}
+				                                             {% for fach in faecherListe %}
+				                                                        <div class="dropdown-item">
+				                                                            <li>
+				                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+				                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+				                                                                    {{fach.bezeichnung}}
+				                                                            </li>
+				                                                        </div>
+				                                              {% endfor %}
+			                                              {% endif %}			                                             	                                           	                                                                                                         
                                                     </ul>
                                                 </div>
                                             </div>
@@ -79,7 +117,6 @@
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
                                 <input type="submit" class="btn btn-primary"  name="editStudent" value="Schüler bearbeiten" style="background-color: #006633"
                                            onclick="return confirm('Änderungen an SchülerIn {{schueler.vorname}} {{schueler.nachname}} speichern? ')">
-
                             </div>
                         </form>
                     </div>
