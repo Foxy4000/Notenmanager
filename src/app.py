@@ -224,6 +224,15 @@ def deleteClass(klasse_id):
         flash("Keine Berechtigung!")
     return redirect(url_for('profile'))
 
+@app.route('/profile/deleteSubject/<subject_id>', methods=['POST'])
+@login_required
+def deleteSubject(subject_id):
+    fach = Fach.query.get_or_404(subject_id)
+    db.session.delete(fach)
+    db.session.commit()
+    flash("Das Fach " + fach.bezeichnung + " wurde entfernt")
+    return redirect(url_for('profile'))
+
 
 class Lehrer(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
