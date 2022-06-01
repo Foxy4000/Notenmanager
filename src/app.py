@@ -149,6 +149,7 @@ def editStudent(student_id):
         for belegung in belegungen:
             db.session.delete(belegung)
             db.session.commit()
+            
         for fach_id in faecher:
             belegung = Belegung(fach_id=fach_id, schueler_id=student_id)
             db.session.add(belegung)

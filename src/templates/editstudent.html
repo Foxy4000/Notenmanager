@@ -75,8 +75,6 @@
 			                                      			{% set faecherBesucht = faecherBesucht.append(belegung.fach_id) %}
 			                                        	{% endif %}
 			                                       	{% endfor %} 
-			                                       	
-			                                       	<!-- füge nicht besucht Fächer der Liste hinzu -->
                                                    
 			                                        {% for belegung in belegungListe %}
 				                                        {% if belegung.schueler_id == schueler.id %}
@@ -102,59 +100,7 @@
 						                                        </li>
 					                                        </div>			                                        
 				                                        {% endif %}
-			                                        {% endfor %} 
-
-                                                   <!-- 
-                                                        
-                                                        
-                                                        {% set ns = namespace(found=false) %}
-                                                        
-                                                        {% for belegung in belegungListe %}
-	                                                        {% if schueler.id == belegung.schueler_id%}
-	                                                        {% set ns.found = true %}
-		                                                        {% for fach in faecherListe %}
-			                                                        {% if fach.id == belegung.fach_id %}
-			                                                        <div class="dropdown-item">
-			                                                            <li>
-			                                                                <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="..." checked>
-			                                                                
-			                                                                    {{fach.bezeichnung}}
-			                                                            </li>
-			                                                        </div>	
-			                                                        {% set faecherBesucht = faecherBesucht.append(fach) %}		                                                    
-			                                                        {% endif %}
-		                                                        {% endfor %}		                                                        
-		                                                	{% endif %}                                 	
-                                                        {% endfor %}                                                          
-                                                        {% for fach in faecherListe %}                                                   
-	                                                        {% if fach not in faecherBesucht %}
-				                                                        <div class="dropdown-item">
-				                                                            <li>
-				                                                                <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="..." unchecked>
-				                                                                
-				                                                                    {{fach.bezeichnung}}
-				                                                            </li>
-				                                                        </div>
-				                                             {% endif %}
-			                                             {% endfor %}    			                                             
-			                                             {% if not ns.found %}
-				                                             {% for fach in faecherListe %}
-				                                                        <div class="dropdown-item">
-				                                                            <li>
-				                                                                <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="..." unchecked>
-				                                                               
-				                                                                    {{fach.bezeichnung}}
-				                                                            </li>
-				                                                        </div>
-				                                              {% endfor %}
-			                                             {% endif %}	
-			                                             
-			                                             
-			                                        -->
-			                                             	
-			                                             	
-			                                             	
-			                                             		                                             	                                           	                                                                                                         
+			                                        {% endfor %} 			                                             		                                             	                                           	                                                                                                         
                                                     </ul>
                                                 </div>
                                             </div>
