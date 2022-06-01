@@ -41,7 +41,7 @@
                                                         {% for klasse in klassenListe %}
                                                         <div class="dropdown-item">
                                                             <li>
-                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+                                                                <input class="form-check-input me-1" name="klasse_id" type="radio" value={{klasse.id}} aria-label="..." unchecked>
                                                                 <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
                                                                     {{klasse.bezeichnung}}
                                                             </li>
@@ -59,7 +59,7 @@
                                                         {% for fach in faecherListe %}
                                                         <div class="dropdown-item">
                                                             <li>
-                                                                <input class="form-check-input me-1" name="mathe" type="checkbox" value="Mathe" aria-label="...">
+                                                                <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="...">
                                                                 <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
                                                                     {{fach.bezeichnung}}
                                                             </li>

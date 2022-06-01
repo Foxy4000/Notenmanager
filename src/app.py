@@ -103,7 +103,7 @@ def profile():
         vorname = request.form.get('name')
         nachname = request.form.get('surname')
         # klasse = Klasse.query.order_by(Klasse.id.desc()).first() kann sobald die Klasse weiter definiert ist statt der Zeile drunter eingeführt werden
-        klasse_id = request.form.get('klassen')  # klasse.id statt der request form
+        klasse_id = request.form.get('klasse_id')  # klasse.id statt der request form
         schueler = Schueler(vorname=vorname, nachname=nachname, klasse_id=klasse_id)
         db.session.add(schueler)
         db.session.commit()
@@ -111,12 +111,13 @@ def profile():
         flash(vorname + " " + nachname + " wurde hinzugefügt!")
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
-
-        if request.form.get('mathe') == 'Mathe':
-            fach_id = request.form.get('mathe')
-            belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)
-            db.session.add(belegung)
-            db.session.commit()
+        
+        if request.form.getlist('fach_id'):
+            faecher = request.form.getlist('fach_id')
+            for fach_id in faecher:
+                belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)    
+                db.session.add(belegung)
+                db.session.commit()
 
         if request.form.get('deutsch') == 'Deutsch':
             fach_id = request.form.get('deutsch')
@@ -128,25 +129,33 @@ def profile():
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
     faecherBesucht = []
+    faecherNichtBesucht = []
     schuelerList = Schueler.query.all()
     lehrer = Lehrer.query.get_or_404(current_user.id)
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
-    return render_template("profile.html", schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, lehrer=lehrer)
+    return render_template("profile.html", schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
 def editStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
     schueler_alt = schueler
-    # belegung = Belegung.query.get_or_404(student_id)
+    belegungen = Belegung.query.filter_by(schueler_id=student_id)
     if request.method == 'POST':
         firstname = request.form.get('vorname')
         lastname = request.form.get('nachname')
-
-        # schueler.klasse_id = request.form['klasse_id']
-        # belegung.fach_id = request.form['fach_id']
+        klasse_id = request.form.get('klasse_id')
+        faecher = request.form.getlist('fach_id')
+        for belegung in belegungen:
+            db.session.delete(belegung)
+            db.session.commit()
+        for fach_id in faecher:
+            belegung = Belegung(fach_id=fach_id, schueler_id=student_id)
+            db.session.add(belegung)
+            db.session.commit()
         schueler.vorname = firstname
         schueler.nachname = lastname
+        schueler.klasse_id = klasse_id
         db.session.add(schueler)
         db.session.commit()
         flash(schueler_alt.vorname + " " + schueler_alt.nachname + " wurde bearbeitet")

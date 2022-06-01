@@ -45,8 +45,9 @@
                               <div>
                                   <ul style="list-style: none; padding-left: 0px">
                                       <!--for loop start to list all classes of this particular teacher -->
+                                      {% for klasse in klassenListe %}
                                       <li class="d-flex justify-content-between align-items-center">
-                                          <h6 class="mb-0" style="width:200px">1a</h6>
+                                          <h6 class="mb-0" style="width:200px">{{klasse.bezeichnung}}</h6>
                                           <h6 class="mb-0">Anzahl Schüler</h6>
                                           <a class="nav-link" href="#" id="classDropdown" role="button dropend" data-bs-toggle="dropdown"
                                                 aria-expanded="false">
@@ -64,7 +65,7 @@
                                                 {% endif %}
 
                                                 <form method="POST">
-                                                	<a href="{{ url_for('deleteClass', klasse_id=1) }}" class="dropdown-item" onclick="return confirm('Klasse endgültig löschen?')">Klasse löschen</a>
+                                                	<a href="{{ url_for('deleteClass', klasse_id=klasse.id) }}" class="dropdown-item" onclick="return confirm('Klasse endgültig löschen?')">Klasse löschen</a>
                                                 </form>                                                    
                                                 <li>
                                                     <hr class="dropdown-divider">
@@ -75,6 +76,7 @@
                                             </ul>
                                       </li>
                                       <hr>
+                                      {% endfor %}
                                       <!--for schleife end-->
                                   </ul>
                             </div>
@@ -199,7 +201,11 @@
                                 {%for schueler in schuelerList%}
                                       <li class="d-flex justify-content-between align-items-center">
                                           <h6 class="mb-0" style="width:400px">{{schueler.vorname}} {{schueler.nachname}}</h6>
-                                          <h6>1a</h6>
+                                          {% for klasse in klassenListe %}
+	                                          {% if schueler.klasse_id == klasse.id %}
+	                                          <h6>{{klasse.bezeichnung}}</h6>
+	                                          {% endif %}
+                                          {% endfor %}
                                           {%if lehrer.ist_administrator%}
                                            <div>
                                                 <a class="nav-link" href="#" id="studentDropdown" role="button dropend" data-bs-toggle="dropdown"
