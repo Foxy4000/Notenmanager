@@ -1,49 +1,53 @@
 <!DOCTYPE html>
-<html lang="de">
-     {% block content %}
+<html lang="en">
+ {% block content %}
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-
-          <div class="modal fade" id="addStudent" tabindex="-1" role="dialog" aria-labelledby="addStudentTitle" aria-hidden="true">
+{%for fach in faecherListe%}
+    <div class="modal fade" id="editSubject {{ fach.id }}" tabindex="-1" role="dialog" aria-labelledby="editStudent" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                          <div class="modal-header">
-                            <h5 class="modal-title" id="addStudentTitle">SchülerIn hinzufügen</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Fach bearbeiten</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form method="post" action="profile">
+                        <form method="post" {#action="{{ url_for('editSubject', subject_id=fach.id) }}" (url:/profile/editSubject/<subject_id>#}>
                             <div class="modal-body">
                                  <div class="column is-4 is-offset-4">
                                     <div class="box">
-
                                             <div class="mb-3">
-                                                <label for="name">Vorname:</label>
-                                                <input class="form-control" name="name" id="name" placeholder="Vorname der SchülerIn" required="required">
+                                                <label for="bezeichnung">Bezeichnung:</label>
+                                                <input class="form-control" name="bezeichnung" id="bezeichnung" value="{{fach.bezeichnung}}" required="required">
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="surname">Nachname:</label>
-                                                <input class="form-control" type="surname" name="surname" id="surname" placeholder="Nachname der SchülerIn" required="required">
+                                                <label for="lehrer_vorname">Vorname des Lehrers:</label>
+                                                <input class="form-control" name="lehrer_vorname" id="lehrer_vorname" value="Backend" required="required">
+                                           </div>
+
+                                            <div class="mb-3">
+                                                <label for="lehrer_nachname">Nachname des Lehrers:</label>
+                                                <input class="form-control" name="lehrer_nachname" id="lehrer_nachname" value="Backend" required="required">
                                            </div>
 
                                             <div class="d-flex justify-content-around" >
                                                 <div class="dropdown">
                                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        Klasse auswählen
+                                                        Schüler auswählen
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                                         <!--only temporary list; need backend call to list all available courses -->
-                                                        {% for klasse in klassenListe %}
+                                                        {% for schueler in schuelerList %}
                                                         <div class="dropdown-item">
                                                             <li>
-                                                                <input class="form-check-input me-1" name="klasse_id" type="radio" value={{klasse.id}} aria-label="..." unchecked>
+                                                                <input class="form-check-input me-1" name="schueler_id" type="checkbox" value={{schueler.id}} aria-label="..." unchecked>
                                                                 <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                                    {{klasse.bezeichnung}}
+                                                                    {{schueler.vorname}} {{schueler.nachname}}
                                                             </li>
                                                         </div>
                                                         {% endfor %}
@@ -52,16 +56,16 @@
 
                                                 <div class="dropdown">
                                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        wähle Fächer
+                                                        Prüfungen auswählen
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                                         <!--only temporary list; need backend call to list all available courses -->
-                                                        {% for fach in faecherListe %}
+                                                        {% for pruefung in pruefungListe %}
                                                         <div class="dropdown-item">
                                                             <li>
-                                                                <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="...">
+                                                                <input class="form-check-input me-1" name="pruefung_id" type="checkbox" value={{pruefung.id}} aria-label="...">
                                                                 <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
-                                                                    {{fach.bezeichnung}}
+                                                                    {{pruefung.bezeichnung}}
                                                             </li>
                                                         </div>
                                                         {% endfor %}
@@ -70,20 +74,18 @@
                                             </div>
 
                                     </div>
-                                </div>
+                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-
-                                <input type="submit" name="submit1" class="btn btn-primary" value="Schüler hinzufügen" style="background-color: #006633;">
-
+                                <input type="submit" class="btn btn-primary"  name="editStudent" value="Fach bearbeiten" style="background-color: #006633"
+                                           onclick="return confirm('Änderungen an Fach {{fach.bezeichnung}}  speichern? ')">
                             </div>
                         </form>
-                        </div>
                     </div>
-            	</div>
+                </div>
+            </div>
+{%endfor%}
 </body>
-
-
-    {% endblock %}
+ {% endblock %}
 </html>

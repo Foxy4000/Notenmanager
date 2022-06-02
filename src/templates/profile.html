@@ -2,10 +2,12 @@
 <html lang="en">
 {% include 'createClass.html' %}
 {% include 'createSubject.html' %}
-{% include 'editClass.html' %}
-{% include 'editstudent.html'%}
 {% include 'addstudent.html'%}
-{% include 'createSubject.html'%}
+{% include 'editClass.html' %}
+{% include 'editSubject.html' %}
+{% include 'editstudent.html'%}
+
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -162,7 +164,7 @@
                             {%for fach in faecherListe%}
                             <li class="d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0" style="width:400px">{{fach.bezeichnung}}</h6>
-                                <h6>Anzahl Schüler</h6>
+                                <h6></h6>
                                 <div>
                                     <a class="nav-link" href="#" role="button dropend" data-bs-toggle="dropdown"
                                        aria-expanded="false">
@@ -173,9 +175,8 @@
                                     </a>
 
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a href="#edit" class="dropdown-item" data-toggle="modal"
-                                           data-target="#bearbeiten"
-                                           data=klassenListe, faecherListe, schuelerList, belegungListe, faecherBesucht>
+                                        <a class="dropdown-item" data-toggle="modal"
+                                           data-target="#editSubject {{fach.id}}">
                                             bearbeiten</a>
                                         <li>
                                             <hr class="dropdown-divider">
@@ -220,14 +221,15 @@
                     <div>
                         <ul style="list-style: none; padding-left: 0px">
                             {%for schueler in schuelerList%}
-                            <li class="d-flex justify-content-between align-items-center">
+                            <li class="d-flex justify-content-between align-items-center list-group-item-action">
+                                <a href="{{url_for('viewStudent', student_id=schueler.id)}}" style="text-decoration: none; color: black">
                                 <h6 class="mb-0" style="width:400px">{{schueler.vorname}} {{schueler.nachname}}</h6>
                                 {% for klasse in klassenListe %}
                                 {% if schueler.klasse_id == klasse.id %}
                                 	<h6>{{klasse.bezeichnung}}</h6>
                                 {% endif %}
                                 {% endfor %}
-                                
+                                </a>
                                 {%if lehrer.ist_administrator%}
                                 <div>
                                     <a class="nav-link" href="#" id="studentDropdown" role="button dropend"
@@ -274,15 +276,7 @@
 </div>
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
+
 
 {% endblock %}
 

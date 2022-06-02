@@ -112,11 +112,11 @@ def profile():
         flash(vorname + " " + nachname + " wurde hinzugefügt!")
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
-        
+
         if request.form.getlist('fach_id'):
             faecher = request.form.getlist('fach_id')
             for fach_id in faecher:
-                belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)    
+                belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)
                 db.session.add(belegung)
                 db.session.commit()
 
@@ -166,8 +166,22 @@ def profile():
     schuelerList = Schueler.query.all()
     pruefungListe = Pruefung.query.all()
     lehrer = Lehrer.query.get_or_404(current_user.id)
+
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
     return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer)
+
+
+@app.route('/profile/viewStudent/<student_id>', methods=['GET', 'POST'])
+def viewStudent(student_id):
+    schueler = Schueler.query.get_or_404(student_id)
+    faecher = db.session.query(Schueler, Belegung, Fach
+                            ).filter(
+                                Schueler.id == Belegung.schueler_id
+                            ).filter(
+                                Belegung.fach_id == Fach.id
+                            ).filter(
+                                Schueler.id == student_id)
+    return render_template("studentdashboard.html", schueler=schueler, faecher=faecher)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
@@ -183,7 +197,7 @@ def editStudent(student_id):
         for belegung in belegungen:
             db.session.delete(belegung)
             db.session.commit()
-            
+
         for fach_id in faecher:
             belegung = Belegung(fach_id=fach_id, schueler_id=student_id)
             db.session.add(belegung)
