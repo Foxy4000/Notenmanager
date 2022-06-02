@@ -171,10 +171,15 @@ def profile():
         klasse = Klasse.query.order_by(Klasse.id.desc()).first()
         klasse_id = klasse.id
 
-        # if request.form.getlist('schueler_id'):
-        #     schuelerLi = request.form.getlist('schueler_id')
-        #     for schueler in schuelerLi:
-        #     schueler.klasse_id = klasse.id
+        if request.form.getlist('schueler_id'):
+            schuelerList = request.form.getlist('schueler_id')
+            for schueler_id in schuelerList:
+                student = Schueler.query.get_or_404(schueler_id)
+                student.klasse_id = klasse_id
+                db.session.add(student)
+                db.session.commit()
+
+            db.session.commit()
 
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
@@ -228,33 +233,6 @@ def editStudent(student_id):
         flash(schueler_alt.vorname + " " + schueler_alt.nachname + " wurde bearbeitet")
 
     return redirect(url_for('profile'))
-
-# @app.route("/createClass", methods=['POST', 'GET'])
-# @login_required
-# def createClass():
-#     if request.form.get('submit2') == 'Klasse erstellen':
-#         if current_user.ist_administrator:
-#             klassenname = request.form.get('className')
-#             klassenlehrer = request.form.get('classTeacher')
-#             lehrerId = Lehrer.query.filter_by(bezeichnung=klassenlehrer)
-#             klasse = Klasse(bezeichnung=klassenname, lehrer_id=lehrerId)
-#             db.session.add(klasse)
-#             db.session.commit()
-#
-#             klasse = Klasse.query.order_by(Klasse.id.desc()).first()
-#             klasse_id = klasse.id
-#
-#             studentList = request.form.getList('student_id')
-#             for student in studentList:
-#                 student.class_id = klasse_id
-#                 db.session.commit()
-#
-#             flash("Klasse " + klasse.bezeichnung + " wurde hinzugefügt")
-#         else:
-#             flash("Keine Berechtigung!")
-#
-#         classList = Klasse.query.all()
-#         return render_template("profile.html", klassenListe=classList)
 
 #@app.route("/createSubject", methods=['POST', 'GET'])
 #@login_required
