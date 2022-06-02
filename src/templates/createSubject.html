@@ -1,68 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
+     {% block content %}
 <head>
     <meta charset="UTF-8">
-    <title>Fach anlegen</title>
+    <title>Title</title>
 </head>
 <body>
-    <div class="modal fade" id="subjectAnlegen" tabindex="-1" role="dialog" aria-labelledby="subjectAnlegenTitle"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="subjectAnlegenTitle">Fach anlegen</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="column is-4 is-offset-4">
-                        <div class="box">
-                            <form method="post" action="submitSubject">
-                                <div class="mb-3">
 
-                                    <label for="subjectName">Fach:</label>
-                                    <input class="form-control" name="subjectName" id="subjectName" placeholder="Fach"
-                                           required="required" minlength="2">
+          <div class="modal fade" id="createSubject" tabindex="-1" role="dialog" aria-labelledby="createSubjectTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                         <div class="modal-header">
+                            <h5 class="modal-title" id="addSubjectTitle">Fach hinzufügen</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post" action="profile">
+                            <div class="modal-body">
+                                 <div class="column is-4 is-offset-4">
+                                    <div class="box">
 
-                                    <label for="subjectTeacher">Lehrer:</label>
-                                    <input class="form-control" name="subjectTeacher" id="subjectTeacher" placeholder="Lehrer">
+                                            <div class="mb-3">
+                                                <label for="bezeichnung">Bezeichnung:</label>
+                                                <input class="form-control" name="bezeichnung" id="bezeichnung" placeholder="Bezeichnung" required="required">
+                                            </div>
 
-                                    <label for="studentsInSubject">Schüler:</label>
-                                    <input class="form-control" name="studentsInSubject" id="studentsInSubject" placeholder="Schüler" type="text" data-provide="typeahead" autocomplete="off">
+                                            <div class="mb-3">
+                                                <label for="lehrer_vorname">Vorname des Lehrers:</label>
+                                                <input class="form-control" name="lehrer_vorname" id="lehrer_vorname" placeholder="Vorname des Lehrers" required="required">
+                                           </div>
 
-                                    <label for="examsInSubject">Prüfungen:</label>
-                                    <input class="form-control" name="examsInSubject" id="examsInSubject" placeholder="Prüfungen">
+                                            <div class="mb-3">
+                                                <label for="lehrer_nachname">Nachname des Lehrers:</label>
+                                                <input class="form-control" name="lehrer_nachname" id="lehrer_nachname" placeholder="Nachname des Lehrers" required="required">
+                                           </div>
 
+                                            <div class="d-flex justify-content-around" >
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Schüler auswählen
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                        <!--only temporary list; need backend call to list all available courses -->
+                                                        {% for schueler in schuelerList %}
+                                                        <div class="dropdown-item">
+                                                            <li>
+                                                                <input class="form-check-input me-1" name="schueler_id" type="checkbox" value={{schueler.id}} aria-label="..." unchecked>
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                    {{schueler.vorname}} {{schueler.nachname}}
+                                                            </li>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
 
-                                    {%for subject in subjectList%}
-                                    <li class="d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0" style="width:400px">{{subject.bezeichnung}}</h6>
-                                        <h6>1a</h6>
-                                        <div>
-                                            <a class="nav-link" href="#" id="subjectDropdown" role="button dropend"
-                                               data-bs-toggle="dropdown"
-                                               aria-expanded="false">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="black"
-                                                     class="bi bi-three-dots" viewBox="0 0 16 16">
-                                                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </li>
-                                    <hr>
-                                    {%endfor%}
+                                                <div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Prüfungen auswählen
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                        <!--only temporary list; need backend call to list all available courses -->
+                                                        {% for pruefung in pruefungListe %}
+                                                        <div class="dropdown-item">
+                                                            <li>
+                                                                <input class="form-check-input me-1" name="pruefung_id" type="checkbox" value={{pruefung.id}} aria-label="...">
+                                                                <!-- value ist verantwortlich für die vergabe von IDs(for-Schleife einfügen)-->
+                                                                    {{pruefung.bezeichnung}}
+                                                            </li>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                    </div>
                                 </div>
-                            </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+
+                                <input type="submit" name="submit1" class="btn btn-primary" value="Fach hinzufügen" style="background-color: #006633;">
+
+                            </div>
+                        </form>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-                        <input type="submit" name="submit1" class="btn btn-primary" value="Änderungen speichern" style="background-color: #006633;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            	</div>
 </body>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    {% endblock %}
 </html>
