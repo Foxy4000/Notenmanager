@@ -157,6 +157,24 @@ def profile():
                 db.session.commit()
 
 
+#Klasse anlegen
+    if request.form.get('submit1') == 'Klasse hinzufügen':
+        bezeichnung = request.form.get('bezeichnung')
+        lehrer_vorname = request.form.get('lehrer_vorname')
+        lehrer_nachname = request.form.get('lehrer_nachname')
+        lehrer = Lehrer.query.filter_by(vorname=lehrer_vorname, nachname=lehrer_nachname).first()
+        klasse = Klasse(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
+        db.session.add(klasse)
+        db.session.commit()
+
+        flash(bezeichnung + " wurde hinzugefügt!")
+        klasse = Klasse.query.order_by(Klasse.id.desc()).first()
+        klasse_id = klasse.id
+
+        # if request.form.getlist('schueler_id'):
+        #     schuelerLi = request.form.getlist('schueler_id')
+        #     for schueler in schuelerLi:
+        #     schueler.klasse_id = klasse.id
 
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
@@ -211,6 +229,32 @@ def editStudent(student_id):
 
     return redirect(url_for('profile'))
 
+# @app.route("/createClass", methods=['POST', 'GET'])
+# @login_required
+# def createClass():
+#     if request.form.get('submit2') == 'Klasse erstellen':
+#         if current_user.ist_administrator:
+#             klassenname = request.form.get('className')
+#             klassenlehrer = request.form.get('classTeacher')
+#             lehrerId = Lehrer.query.filter_by(bezeichnung=klassenlehrer)
+#             klasse = Klasse(bezeichnung=klassenname, lehrer_id=lehrerId)
+#             db.session.add(klasse)
+#             db.session.commit()
+#
+#             klasse = Klasse.query.order_by(Klasse.id.desc()).first()
+#             klasse_id = klasse.id
+#
+#             studentList = request.form.getList('student_id')
+#             for student in studentList:
+#                 student.class_id = klasse_id
+#                 db.session.commit()
+#
+#             flash("Klasse " + klasse.bezeichnung + " wurde hinzugefügt")
+#         else:
+#             flash("Keine Berechtigung!")
+#
+#         classList = Klasse.query.all()
+#         return render_template("profile.html", klassenListe=classList)
 
 #@app.route("/createSubject", methods=['POST', 'GET'])
 #@login_required
