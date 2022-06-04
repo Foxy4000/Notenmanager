@@ -120,14 +120,6 @@ def profile():
                 db.session.add(belegung)
                 db.session.commit()
 
-        if request.form.get('deutsch') == 'Deutsch':
-            fach_id = request.form.get('deutsch')
-            belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)
-            db.session.add(belegung)
-            db.session.commit()
-
-
-
     if request.form.get('submit1') == 'Fach hinzufügen':
         bezeichnung = request.form.get('bezeichnung')
         lehrer_vorname = request.form.get('lehrer_vorname')
@@ -160,10 +152,8 @@ def profile():
 #Klasse anlegen
     if request.form.get('submit1') == 'Klasse hinzufügen':
         bezeichnung = request.form.get('bezeichnung')
-        lehrer_vorname = request.form.get('lehrer_vorname')
-        lehrer_nachname = request.form.get('lehrer_nachname')
-        lehrer = Lehrer.query.filter_by(vorname=lehrer_vorname, nachname=lehrer_nachname).first()
-        klasse = Klasse(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
+        lehrer_id = request.form.get('klasse_lehrer')
+        klasse = Klasse(bezeichnung=bezeichnung, lehrer_id=lehrer_id)
         db.session.add(klasse)
         db.session.commit()
 
@@ -189,12 +179,14 @@ def profile():
     schuelerList = Schueler.query.all()
     pruefungListe = Pruefung.query.all()
     lehrer = Lehrer.query.get_or_404(current_user.id)
+    lehrerListe = Lehrer.query.all()
 
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
-    return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer)
+    return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer, lehrerListe=lehrerListe)
 
 
 @app.route('/profile/viewStudent/<student_id>', methods=['GET', 'POST'])
+@login_required
 def viewStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
     faecher = db.session.query(Schueler, Belegung, Fach
@@ -208,6 +200,7 @@ def viewStudent(student_id):
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
+@login_required
 def editStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
     schueler_alt = schueler
@@ -303,6 +296,27 @@ def deleteClass(klasse_id):
     else:
         flash("Keine Berechtigung!")
     return redirect(url_for('profile'))
+
+
+
+@app.route('/profile/editSubject/<fach_id>', methods=['POST', 'GET'])
+@login_required
+def editSubject(fach_id):
+    fach = Fach.query.get_or_404(fach_id)
+    if request.method == 'POST':
+        bezeichnung = request.form.get('bezeichnung')
+        fach.bezeichnung = bezeichnung
+        lehrer_id = request.form.get('fach_lehrer')
+        fach.lehrer_id = lehrer_id
+        db.session.add(fach)
+        db.session.commit()
+        flash(fach.bezeichnung + " wurde bearbeitet")
+        
+
+        
+
+    return redirect(url_for('profile'))
+
 
 @app.route('/profile/deleteSubject/<subject_id>', methods=['POST'])
 @login_required
