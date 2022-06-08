@@ -227,45 +227,42 @@ def editStudent(student_id):
 
     return redirect(url_for('profile'))
 
-#@app.route("/createSubject", methods=['POST', 'GET'])
-#@login_required
-#def createSubject():
-#    if request.form.get('submit1') == 'Änderungen speichern':
-#        if current_user.ist_administrator:
-#            bezeichnung = request.form.get('subjectName')
-#            lehrer_bez = request.form.get('subjectTeacher')
-#            lehrer = Lehrer.query.filter_by(bezeichnung=lehrer_bez)
-#            subject = Fach(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
-#            db.session.add(subject)
-#            db.session.commit()
-#
-#            subject = Fach.query.order_by(Fach.id.desc()).first()
-#            subject_id = subject.id
-#
-#            # in der Suche müssen Vorschläge anhand der bisherigen Eingaben gemacht werden
-#           # über die Suche gefundene und hinzuzufügende Studenten und Prüfungen müssen in Liste gespeichert werden
-#
-#            studentList = request.form.get('studentsInSubject')
-#            for student in studentList:
-#                belegung = Belegung(schueler_id=student.id, fach_id=subject_id)
-#                db.session.add(belegung)
-#                db.session.commit()
-#
-#            examList = request.form.get('examsInSubject')
-#            for exam in examList:
-#                pruefung = Fach.query.get_or_404(exam.id)
-#                #if pruefung.fach_id is None:
-#                pruefung.fach_id = subject_id
-#                db.session.add(pruefung)
-#                db.session.commit()
-#                #else:...
-#
-#            flash("Fach " + subject.bezeichnung + " wurde hinzugefügt")
-#        else:
-#            flash("Keine Berechtigung!")
-#
-#    subjectList = Fach.query.all()
-#    return render_template("profile.html", subjectList=subjectList)
+@app.route('/profile/editClass/<klasse_id>', methods=['POST', 'GET'])
+def editClass(klasse_id):
+    klasse = Klasse.query.get_or_404(klasse_id)
+    klasse_alt = klasse
+    schuelerLiAlt = Schueler.query.filter_by(klasse_id=klasse_id)
+    if request.method == 'POST':
+        bezeichnung = request.form.get('name')
+        klasse.bezeichnung = bezeichnung
+        lehrer_vorname = request.form.get('lehrer_vorname')
+        lehrer_nachname = request.form.get('lehrer_nachname')
+        lehrer = Lehrer.query.filter_by(vorname=lehrer_vorname, nachname=lehrer_nachname).first()
+        klasse.lehrer_id = lehrer.id
+
+        db.session.add(klasse)
+        db.session.commit()
+        flash(klasse_alt.bezeichnung + " wurde bearbeitet")
+
+
+        klasse = Klasse.query.filter_by(bezeichnung=bezeichnung).first()
+        klasse_id = klasse.id
+
+        schuelerLiNeu = request.form.getlist('schueler_id')
+        for schueler in schuelerLiAlt:
+            schueler.klasse_id is None
+            db.session.add(schueler)
+            db.session.commit()
+
+        for schueler in schuelerLiNeu:
+            schueler.klasse_id = klasse_id
+            db.session.add(schueler)
+            db.session.commit()
+        schueler.vorname = lehrer_vorname
+        schueler.nachname = lehrer_nachname
+        schueler.klasse_id = klasse_id
+
+    return redirect(url_for('profile'))
 
 
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])

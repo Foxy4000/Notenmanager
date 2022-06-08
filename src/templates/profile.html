@@ -62,8 +62,9 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     {% if current_user.ist_administrator %}
-                                    <a class="dropdown-item" data-toggle="modal"
-                                       data-target="#bearbeiten_klasse">Bearbeiten</a>
+                                    <li>
+                                        <a class="dropdown-item" data-toggle="modal" data-target="#editClass {{ klasse.id }}">bearbeiten</a>
+                                    </li>
                                        
                                     <li>
                                         <hr class="dropdown-divider">
