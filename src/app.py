@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
+import csv
+import tkinter as tk
 
 from flask import Flask, render_template, Blueprint, session, request, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +10,12 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, Length
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_csv import send_csv
+from tkinter import filedialog
+
+
+
+
 
 # from . import db
 
@@ -23,6 +31,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 # Initialize Database
 db = SQLAlchemy(app)
+
+# Filetypes for export
+filetypes = (
+    ('CSV', '*.csv'),
+    ('All files', '*.*'),
+)
 
 # Flask_Login
 login_manager = LoginManager()
@@ -122,10 +136,8 @@ def profile():
 
     if request.form.get('submit1') == 'Fach hinzufügen':
         bezeichnung = request.form.get('bezeichnung')
-        lehrer_vorname = request.form.get('lehrer_vorname')
-        lehrer_nachname = request.form.get('lehrer_nachname')
-        lehrer = Lehrer.query.filter_by(vorname=lehrer_vorname, nachname=lehrer_nachname).first()
-        fach = Fach(bezeichnung=bezeichnung, lehrer_id=lehrer.id)
+        lehrer_id = request.form.get('klasse_lehrer')     
+        fach = Fach(bezeichnung=bezeichnung, lehrer_id=lehrer_id)
         db.session.add(fach)
         db.session.commit()
 
@@ -133,9 +145,9 @@ def profile():
         fach = Fach.query.order_by(Fach.id.desc()).first()
         fach_id = fach.id
 
-        if request.form.getlist('schueler_id'):
-            schuelerLi = request.form.getlist('schueler_id')
-            for schueler_id in schuelerLi:
+        if request.form.getlist('fach_schueler'):
+            schuelerListe = request.form.getlist('fach_schueler')
+            for schueler_id in schuelerListe:
                 belegung = Belegung(schueler_id=schueler_id, fach_id=fach_id)
                 db.session.add(belegung)
                 db.session.commit()
@@ -161,9 +173,9 @@ def profile():
         klasse = Klasse.query.order_by(Klasse.id.desc()).first()
         klasse_id = klasse.id
 
-        if request.form.getlist('schueler_id'):
-            schuelerList = request.form.getlist('schueler_id')
-            for schueler_id in schuelerList:
+        if request.form.getlist('klasse_schueler'):
+            schuelerListe = request.form.getlist('klasse_schueler')
+            for schueler_id in schuelerListe:
                 student = Schueler.query.get_or_404(schueler_id)
                 student.klasse_id = klasse_id
                 db.session.add(student)
@@ -183,6 +195,50 @@ def profile():
 
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
     return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer, lehrerListe=lehrerListe)
+
+
+@app.route("/profile/exportStudentList/<class_id>", methods=['GET', 'POST'])
+@login_required
+def exportStudentList(class_id):
+    klasse = Klasse.query.get_or_404(class_id)
+    
+    filename = tk.filedialog.asksaveasfilename(
+        title='Speichern als...',
+        filetypes=filetypes,
+        defaultextension='.csv'
+    )
+    
+    if filename != '':
+        with open(filename, 'w', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter = ';')
+            schuelerListe = Schueler.query.filter_by(klasse_id=class_id)
+            lehrerListe = Lehrer.query.all()
+            lehrer = None
+            for lehrerAusListe in lehrerListe:
+                if lehrerAusListe.id == klasse.lehrer_id:
+                    lehrer = lehrerAusListe
+            
+            csvwriter.writerow(["Klasse:", klasse.bezeichnung])
+            csvwriter.writerow(["Lehrer:", lehrer.vorname, lehrer.nachname])
+            csvwriter.writerow([])
+            csvwriter.writerow(["Vorname", "Nachname"])
+            
+            for schueler in schuelerListe:
+                csvwriter.writerow([schueler.vorname, schueler.nachname])
+            flash("Schülerliste wurden exportiert")    
+    return redirect(url_for('profile'))
+
+
+
+@app.route("/profile/searchStudent", methods=['GET', 'POST'])
+@login_required
+def searchStudent():
+    if request.method == 'POST':
+        student_id = request.args.get('searched')
+        return redirect(url_for('viewStudent', student_id=student_id))
+    flash("Funktioniert noch nicht")
+    return redirect(url_for('profile'))
+
 
 
 @app.route('/profile/viewStudent/<student_id>', methods=['GET', 'POST'])

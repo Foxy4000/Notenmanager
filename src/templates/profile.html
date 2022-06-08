@@ -28,10 +28,11 @@
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Klassen</h5>
+                
                 {% if current_user.ist_administrator %}
                 <button href="#createClass" class="btn" data-toggle="modal"
                         data-target="#createClass"
-                        data=lehrerListe>
+                        data=lehrerListe, schuelerListe>
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
                          class="bi bi-plus-circle" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -39,6 +40,7 @@
                     </svg>
                 </button>
                 {% endif %}
+                
             </div>
 
         </div>
@@ -46,13 +48,20 @@
         <div class="card mb-3">
 
             <ul class="card-body" style="overflow-y: auto; max-height: 233px">
+            
                 <div class="row">
                     <div>
                         <ul style="list-style: none; padding-left: 0px">
                         {%for klasse in klassenListe%}
                             <li class="d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0" style="width:400px">{{klasse.bezeichnung}}</h6>
-                                <h6>Anzahl Schüler</h6>
+                                {% set ns = namespace(counter=0) %}
+                                {% for schueler in schuelerList %}
+	                                {% if schueler.klasse_id == klasse.id %}
+		                                {% set ns.counter = ns.counter+1 %}
+	                                {% endif %}
+                                {% endfor %}
+                                <h6>Anzahl Schüler: {{ns.counter}}</h6>
                                 <a class="nav-link" href="#" id="classDropdown" role="button dropend" data-bs-toggle="dropdown"
                                    aria-expanded="false">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="black"
@@ -78,7 +87,7 @@
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="#">Klasse exportieren</a>
+                                        <a class="dropdown-item" href="{{url_for('exportStudentList', class_id=klasse.id)}}">Schülerliste exportieren</a>
                                     </li>
                                 </ul>
                             </li>
@@ -178,7 +187,7 @@
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item" data-toggle="modal"
                                            data-target="#editSubject {{fach.id}}"
-                                           data=lehrerListe>
+                                           data=lehrerListe, belegungList, schuelerList>
                                             bearbeiten</a>
                                         <li>
                                             <hr class="dropdown-divider">
@@ -209,13 +218,32 @@
     </div>
 
     <div class="col-md-6">
+    
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Schüler</h5>
+                
+				<form method="POST">
+				<div class="form-group">				
+					<select class="selectpicker" data-live-search="true" name="searched" id="searched" title ="Schüler auswählen">																							
+					<option></option>
+					{% for schueler in schuelerList %}
+						<option value={{schueler.id}} >{{schueler.vorname}} {{schueler.nachname}} </option>
+					{% endfor %}
+					</select>
+				<button type="button" class="btn btn-success" style="background-color: #006633; color: white" ><a href="{{url_for('searchStudent')}}" style="background-color: #006633; color: white" >Go</a></button>
+				</div>                
+              	</form>
+                
+                
+                
+                
                 <h5>{{schuelerList|count}}</h5>
+                
             </div>
 
         </div>
+        
 
         <div class="card ">
             <ul class="card-body" style="overflow-y: auto; max-height: 300px">

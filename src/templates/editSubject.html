@@ -35,7 +35,7 @@
 
 											
 											<label for="lehrer" class="form-label">Lehrer:</label>
-											<br>
+											
 											{% for lehrer in lehrerListe %}
 												{% if fach.lehrer_id == lehrer.id %}
 													<select class="selectpicker" data-live-search="true" name="fach_lehrer" id="fach_lehrer" value={{lehrer.id}}">
@@ -46,8 +46,32 @@
 											  <option value={{lehrer.id}}>{{lehrer.vorname}} {{lehrer.nachname}}</option>
 											{% endfor %}
 											</select>
-											
 											&nbsp;
+											
+											<br>
+											<label for="Schüler" class="form-label">Schüler:</label>
+																						
+											<select class="selectpicker" data-live-search="true" name="fach_schueler" id="fach_schueler" title ="Schüler auswählen" multiple>																				
+											<option></option>
+											{% set belegung_schueler_id = [] %}
+											{% for schueler in schuelerList %}
+												{% for belegung in belegungListe %}
+													{% if belegung.fach_id == fach.id %} 
+														{% if schueler.id == belegung.schueler_id %}
+																<option value={{schueler.id}} selected>{{schueler.vorname}} {{schueler.nachname}}</option>
+																{% set belegung_schueler_id = belegung_schueler_id.append(schueler.id) %}
+														{% endif %}
+													{% endif %}
+												{% endfor %}
+											{% endfor %}
+											{% for schueler in schuelerList %}
+												{% if schueler.id not in belegung_schueler_id %}
+													<option value={{schueler.id}}>{{schueler.vorname}} {{schueler.nachname}}</option>
+												{% endif %}
+											{% endfor %}
+											</select>
+											</div>
+											&nbsp; 												
 
                                             <div class="d-flex justify-content-around" >
                                                 <div class="dropdown">
