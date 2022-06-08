@@ -4,9 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    
+
+
 </head>
 <body>
 {% for klasse in klassenListe %}
+<form method="post" action="{{ url_for('editClass', klasse_id=klasse.id) }}">
+
 <div class="modal fade" id="editClass {{ klasse.id }}" tabindex="-1" role="dialog" aria-labelledby="editClass"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -20,115 +25,75 @@
                 <div class="modal-body">
                     <div class="column is-4 is-offset-4">
                         <div class="box">
-                            <div class="mb-3">
-                                <label for="search">Suche nach Schüler:</label>
-                                <input class="form-control" name="searchfield" id="search"
-                                       placeholder="Suche...">
-                                <hr/> <!-- Divider zur Abgrenzung-->
+                            
 
                                 <div class="mb-3">
-                                    <label for="bezeichnung">Name:</label>
+                                    <label for="bezeichnung">Bezeichnung:</label>
                                     <input class="form-control" name="bezeichnung"  id="bezeichnung" required="required" value="{{klasse.bezeichnung}}">
                                 </div>
 
-                                {% for lehrer in lehrerListe %}
-                                    {% if lehrer.id == klasse.lehrer_id %}
-                                        <div class="mb-3">
-                                            <label for="lehrer_vorname">Vorname des Lehrers:</label>
-                                            <input class="form-control" name="lehrer_vorname"  id="lehrer_vorname" required="required" value="{{lehrer.vorname}}">
-                                        </div>
+											<label for="lehrer" class="form-label">Lehrer:</label>
+											
+											{% for lehrer in lehrerListe %}
+												{% if klasse.lehrer_id == lehrer.id %}
+													<select class="selectpicker" data-live-search="true" name="klasse_lehrer" id="klasse_lehrer" value={{lehrer.id}}">
+													<option value={{lehrer.id}} selected>{{lehrer.vorname}} {{lehrer.nachname}}</option>
+												{% endif %}
+											{% endfor %}
+											{% for lehrer in lehrerListe %}
+											  <option value={{lehrer.id}}>{{lehrer.vorname}} {{lehrer.nachname}}</option>
+											{% endfor %}
+											</select>
+											&nbsp;
+											<br/>
+                                
 
-                                        <div class="mb-3">
-                                            <label for="lehrer_nachname">Nachname des Lehrers:</label>
-                                            <input class="form-control" name="lehrer_nachname"  id="lehrer_nachname" required="required" value="{{lehrer.nachname}}">
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-
-                                <div class="d-flex justify-content-around" >
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Wähle Schüler
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-
-                                        {% for schueler in schuelerList %}
-                                            {% if klasse.id == schueler.klasse_id %}
-                                                <div class="dropdown-item">
-                                                    <li>
-                                                        <input class="form-check-input me-1" name="schueler_id" type="checkbox" value={{schueler.id}} aria-label="..." checked>
-                                                        {{schueler.vorname}} {{schueler.nachname}}
-                                                    </li>
-                                                </div>
-                                            {% else %}
-                                                <div class="dropdown-item">
-                                                    <li>
-                                                        <input class="form-check-input me-1" name="schueler_id" type="checkbox" value={{schueler.id}} aria-label="..." unchecked>
-                                                        {{schueler.vorname}} {{schueler.nachname}}
-                                                    </li>
-                                                </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <label for="class-students">Schüler:</label>
-                                <input class="form-control" name="student" id="class-students"
-                                       placeholder="Schüler der Klasse hinzufügen">
+											<label for="Schüler" class="form-label">Schüler:</label>
+																						
+											<select class="selectpicker" data-live-search="true" name="klasse_schueler" id="klasse_schueler" title ="Schüler auswählen" multiple>																				
+											<option></option>
+											{% set klasse_schueler_id = [] %}
+											{% for schueler in schuelerList %}							
+												{% if schueler.klasse_id == klasse.id %} 	
+													<option value={{schueler.id}} selected>{{schueler.vorname}} {{schueler.nachname}}</option>
+													{% set klasse_schueler_id = klasse_schueler_id.append(schueler.id) %}					
+												{% endif %}
+											{% endfor %}
+											{% for schueler in schuelerList %}
+												{% if schueler.id not in klasse_schueler_id %}
+													<option value={{schueler.id}}>{{schueler.vorname}} {{schueler.nachname}}</option>
+												{% endif %}
+											{% endfor %}
+											</select>
+											&nbsp; 	
 
 
-                                {%for schueler in schuelerList%}
-                                <li class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0" style="width:400px">{{schueler.vorname}} {{schueler.nachname}}</h6>
-                                    <h6>1a</h6>
-                                    <div>
-                                        <a class="nav-link" href="#" id="studentDropdown" role="button dropend"
-                                           data-bs-toggle="dropdown"
-                                           aria-expanded="false">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="black"
-                                                 class="bi bi-three-dots" viewBox="0 0 16 16">
-                                                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                                            </svg>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                            <li>
-                                                <a class="dropdown-item">
-                                                    <form method="POST"
-                                                          action="{{ url_for('deleteStudent', student_id=schueler.id) }}">
-                                                        <input type="submit" class="dropdown-item"
-                                                               value="Schüler löschen"
-                                                               onclick="return confirm('SchülerIn {{schueler.vorname}} {{schueler.nachname}} endgültig löschen?')">
-                                                    </form>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <hr>
-                                {%endfor%}
+                                
+
+
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-            <form method="post" action="{{ url_for('editClass', klasse_id=klasse.id) }}">
+            <div class="modal-footer">
+            
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-                                <input type="submit" class="btn btn-primary"  name="editClass" value="Klasse bearbeiten" style="background-color: #006633"
-                                           onclick="return confirm('Änderungen an der Klasse {{klasse.bezeichnung}} speichern? ')">
-            </form>
-                </div>
+                    <input type="submit" class="btn btn-primary"  name="editClass" value="Klasse bearbeiten" style="background-color: #006633"
+                           onclick="return confirm('Änderungen an der Klasse {{klasse.bezeichnung}} speichern? ')">
+            
+            </div>
+            </form>                      
+            </div>
+
         </div>
+      
     </div>
+    
 </div>
 {%endfor%}
 </body>
 
 
 
-         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     {% endblock %}
 </html>

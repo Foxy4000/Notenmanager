@@ -21,6 +21,7 @@ from tkinter import filedialog
 
 # Create a Flask Instance
 from sqlalchemy.orm import Session
+from pickle import NONE
 
 app = Flask(__name__)
 main = Blueprint('main', __name__)
@@ -285,39 +286,33 @@ def editStudent(student_id):
 
 @app.route('/profile/editClass/<klasse_id>', methods=['POST', 'GET'])
 def editClass(klasse_id):
-    klasse = Klasse.query.get_or_404(klasse_id)
-    klasse_alt = klasse
-    schuelerLiAlt = Schueler.query.filter_by(klasse_id=klasse_id)
+
     if request.method == 'POST':
-        bezeichnung = request.form.get('name')
+        klasse = Klasse.query.get_or_404(klasse_id)
+
+        bezeichnung = request.form.get('bezeichnung')
         klasse.bezeichnung = bezeichnung
-        lehrer_vorname = request.form.get('lehrer_vorname')
-        lehrer_nachname = request.form.get('lehrer_nachname')
-        lehrer = Lehrer.query.filter_by(vorname=lehrer_vorname, nachname=lehrer_nachname).first()
-        klasse.lehrer_id = lehrer.id
-
+       
+        if request.form.get('klasse_lehrer'):
+            lehrer_id = request.form.get('klasse_lehrer')
+            klasse.lehrer_id = lehrer_id
+            
         db.session.add(klasse)
-        db.session.commit()
-        flash(klasse_alt.bezeichnung + " wurde bearbeitet")
+        db.session.commit()              
 
-
-        klasse = Klasse.query.filter_by(bezeichnung=bezeichnung).first()
-        klasse_id = klasse.id
-
-        schuelerLiNeu = request.form.getlist('schueler_id')
-        for schueler in schuelerLiAlt:
-            schueler.klasse_id is None
-            db.session.add(schueler)
-            db.session.commit()
-
-        for schueler in schuelerLiNeu:
-            schueler.klasse_id = klasse_id
-            db.session.add(schueler)
-            db.session.commit()
-        schueler.vorname = lehrer_vorname
-        schueler.nachname = lehrer_nachname
-        schueler.klasse_id = klasse_id
-
+        if request.form.getlist('klasse_schueler'):
+            schuelerListe = Schueler.query.filter_by(klasse_id=klasse_id)
+            for schueler in schuelerListe:
+                schueler.klasse_id = None
+                db.session.add(schueler)
+                db.session.commit()
+            schuelerListe_id = request.form.getlist('klasse_schueler')
+            for schueler_id in schuelerListe_id:
+                schueler = Schueler.query.get_or_404(schueler_id)
+                schueler.klasse_id = klasse_id
+                db.session.add(schueler)
+                db.session.commit()               
+        flash(klasse.bezeichnung + " wurde bearbeitet")   
     return redirect(url_for('profile'))
 
 
@@ -355,18 +350,31 @@ def deleteClass(klasse_id):
 @app.route('/profile/editSubject/<fach_id>', methods=['POST', 'GET'])
 @login_required
 def editSubject(fach_id):
-    fach = Fach.query.get_or_404(fach_id)
+    
     if request.method == 'POST':
+        fach = Fach.query.get_or_404(fach_id)    
         bezeichnung = request.form.get('bezeichnung')
         fach.bezeichnung = bezeichnung
-        lehrer_id = request.form.get('fach_lehrer')
-        fach.lehrer_id = lehrer_id
+        
+        if request.form.get('fach_lehrer'):
+            lehrer_id = request.form.get('fach_lehrer')
+            fach.lehrer_id = lehrer_id
+            
         db.session.add(fach)
-        db.session.commit()
-        flash(fach.bezeichnung + " wurde bearbeitet")
-        
+        db.session.commit()            
+            
+        if request.form.get('fach_schueler'):
+            belegungListe = Belegung.query.filter_by(fach_id=fach_id)
+            for belegung in belegungListe:
+                db.session.delete(belegung)
+                db.session.commit()
+            schuelerListe_id = request.form.getlist('fach_schueler')
+            for schueler_id in schuelerListe_id:
+                belegung = Belegung(fach_id=fach_id, schueler_id=schueler_id)
+                db.session.add(belegung)
+                db.session.commit()
 
-        
+        flash(fach.bezeichnung + " wurde bearbeitet")
 
     return redirect(url_for('profile'))
 
