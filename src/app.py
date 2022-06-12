@@ -123,7 +123,7 @@ def profile():
         schueler = Schueler(vorname=vorname, nachname=nachname, klasse_id=klasse_id)
         db.session.add(schueler)
         db.session.commit()
-        
+
         flash(vorname + " " + nachname + " wurde hinzugefügt!")
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
@@ -193,9 +193,13 @@ def profile():
     pruefungListe = Pruefung.query.all()
     lehrer = Lehrer.query.get_or_404(current_user.id)
     lehrerListe = Lehrer.query.all()
+    origin = "profile"
 
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
-    return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList, klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe, faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer, lehrerListe=lehrerListe)
+    return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList,
+                           klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe,
+                           faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer,
+                           lehrerListe=lehrerListe, origin=origin)
 
 
 @app.route("/profile/exportStudentList/<class_id>", methods=['GET', 'POST'])
@@ -246,14 +250,24 @@ def searchStudent():
 @login_required
 def viewStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
+    schuelerListe = Schueler.query.all()
+    klassenListe = Klasse.query.all()
+    faecherListe = Fach.query.all()
+    faecherBesucht = []
+    faecherNichtBesucht = []
+    origin = "viewStudent"
     faecher = db.session.query(Schueler, Belegung, Fach
-                            ).filter(
-                                Schueler.id == Belegung.schueler_id
-                            ).filter(
-                                Belegung.fach_id == Fach.id
-                            ).filter(
-                                Schueler.id == student_id)
-    return render_template("studentdashboard.html", schueler=schueler, faecher=faecher)
+                               ).filter(
+        Schueler.id == Belegung.schueler_id
+    ).filter(
+        Belegung.fach_id == Fach.id
+    ).filter(
+        Schueler.id == student_id
+    ).all()
+
+    return render_template("studentdashboard.html", schueler=schueler, faecher=faecher, schuelerList=schuelerListe,
+                           faecherListe=faecherListe, klassenListe=klassenListe, faecherBesucht=faecherBesucht,
+                           faecherNichtBesucht=faecherNichtBesucht, origin=origin)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
@@ -262,7 +276,9 @@ def editStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
     schueler_alt = schueler
     belegungen = Belegung.query.filter_by(schueler_id=student_id)
+    origin = None
     if request.method == 'POST':
+        origin = request.form.get('origin')
         firstname = request.form.get('vorname')
         lastname = request.form.get('nachname')
         klasse_id = request.form.get('klasse_id')
@@ -281,8 +297,11 @@ def editStudent(student_id):
         db.session.add(schueler)
         db.session.commit()
         flash(schueler_alt.vorname + " " + schueler_alt.nachname + " wurde bearbeitet")
+    if origin == "profile":
+        return redirect(url_for('profile'))
+    else:
+        return redirect(url_for('viewStudent', student_id=student_id))
 
-    return redirect(url_for('profile'))
 
 @app.route('/profile/editClass/<klasse_id>', methods=['POST', 'GET'])
 def editClass(klasse_id):

@@ -3,9 +3,11 @@
 {% include 'createClass.html' %}
 {% include 'createSubject.html' %}
 {% include 'addstudent.html'%}
+{% include 'addExam.html' %}
 {% include 'editClass.html' %}
 {% include 'editSubject.html' %}
 {% include 'editstudent.html'%}
+
 
 
 {% extends 'base.html' %}
@@ -137,6 +139,7 @@
 
                                 </button>
                             </li>
+
                             {%endif%}
                             <li class="mb-1">
                                 <button type="button" class="btn btn-primary btn-sm"
@@ -190,13 +193,23 @@
                                     </a>
 
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                         <a class="dropdown-item" data-toggle="modal"
+                                           data-target="#addExam {{fach.id}}"
+                                           data=lehrerListe, belegungList, schuelerList>
+                                            Prüfung hinzufügen</a>
+
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
                                         <a class="dropdown-item" data-toggle="modal"
                                            data-target="#editSubject {{fach.id}}"
                                            data=lehrerListe, belegungList, schuelerList>
                                             bearbeiten</a>
+
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
+
                                         <a class="dropdown-item">
                                             <form method="POST"
                                                   action="{{ url_for('deleteSubject', subject_id=fach.id) }}">
@@ -261,7 +274,7 @@
                                 <h6 class="mb-0" style="width:400px">{{schueler.vorname}} {{schueler.nachname}}</h6>
                                 {% for klasse in klassenListe %}
                                 {% if schueler.klasse_id == klasse.id %}
-                                	<h6>{{klasse.bezeichnung}}</h6>
+                                	<h7>{{klasse.bezeichnung}}</h7>
                                 {% endif %}
                                 {% endfor %}
                                 </a>
@@ -278,8 +291,8 @@
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
                                         <li>
-                                            <a class="dropdown-item" data-toggle="modal"
-                                               data-target="#editStudent {{ schueler.id }}">bearbeiten</a>
+                                            <a class="dropdown-item" data-toggle="modal" id="editStudent{{schueler.id}}"
+                                               data-target="#editStudent {{ schueler.id }}" data-originOfAction="profile">bearbeiten</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">

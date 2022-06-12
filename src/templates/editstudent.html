@@ -22,6 +22,9 @@
                             <div class="modal-body">
                                  <div class="column is-4 is-offset-4">
                                     <div class="box">
+                                        {%if origin%}
+                                        <input type="hidden" id="origin" name="origin" value="{{origin}}">
+                                        {%endif%}
                                             <div class="mb-3">
                                                 <label for="vorname">Vorname:</label>
                                                 <input class="form-control" name="vorname"  id="vorname" required="required" value="{{schueler.vorname}}">
@@ -66,7 +69,7 @@
                                                         wähle Fächer
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                                        
+
 			                                       	{% set faecherBesucht = faecherBesucht[:] %}
 
 			                                       	<!-- füge besuchte Fächer der Liste hinzu -->
@@ -74,33 +77,33 @@
 			                                      		{% if schueler.id == belegung.schueler_id %}
 			                                      			{% set faecherBesucht = faecherBesucht.append(belegung.fach_id) %}
 			                                        	{% endif %}
-			                                       	{% endfor %} 
-                                                   
+			                                       	{% endfor %}
+
 			                                        {% for belegung in belegungListe %}
 				                                        {% if belegung.schueler_id == schueler.id %}
 					                                        {% for fach in faecherListe %}
 						                                        {% if belegung.fach_id == fach.id %}
 							                                        <div class="dropdown-item">
-								                                        <li> 			                                        
+								                                        <li>
 									                                        <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="..." checked>
 									                                        {{fach.bezeichnung}}
 								                                        </li>
-							                                        </div>	
+							                                        </div>
 							                                    {% endif %}
 						                                    {% endfor %}
-					                                    {% endif %}			                                        
+					                                    {% endif %}
 			                                        {% endfor %}
 
 			                                        {% for fach in faecherListe %}
 				                                        {% if fach.id not in faecherBesucht %}
 					                                        <div class="dropdown-item">
-						                                        <li> 			                                        
+						                                        <li>
 							                                        <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="..." unchecked>
 							                                        {{fach.bezeichnung}}
 						                                        </li>
-					                                        </div>			                                        
+					                                        </div>
 				                                        {% endif %}
-			                                        {% endfor %} 			                                             		                                             	                                           	                                                                                                         
+			                                        {% endfor %}
                                                     </ul>
                                                 </div>
                                             </div>
@@ -118,6 +121,7 @@
             </div>
 
         {%endfor%}
+
     </body>
 
 

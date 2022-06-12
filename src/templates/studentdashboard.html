@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% include 'editstudent.html' %}
+
     {% extends 'base.html' %}
+    {%include 'editstudent.html'%}}
 
  {% block content %}
 
@@ -19,10 +20,12 @@
                           <div class="row">
                               <div>
                                   <ul style="list-style: none; padding-left: 0px">
+                                      {% for fach in faecher%}
+
                                        <li class="d-flex justify-content-between align-items-center">
-                                          <h6 class="mb-0" style="width: 200px">Mathe</h6>
+                                          <h6 class="mb-0" style="width: 200px">{{fach.Fach.bezeichnung}}</h6>
                                            <h6 class="mb-0">3</h6>
-                                               <a style="color: black" data-toggle="collapse" href="#collapseSubject1" aria-expanded="false" aria-controls="collapseSubject">
+                                               <a style="color: black" data-toggle="collapse" href="#collapseSubject{{fach.Fach.id}}" aria-expanded="false" aria-controls="collapseSubject">
                                                   <i onclick="toggle(this)" class="bi bi-chevron-down" style="font-size: 25px"></i>
                                                    <script>
                                                     function toggle(x){
@@ -31,67 +34,32 @@
                                                    </script>
                                              </a>
                                       </li>
-                                               <div class="collapse" id="collapseSubject1">
-                                                   <div class="row">
+                                             <div class="collapse" id="collapseSubject{{fach.Fach.id}}">
+                                                   <ul>
+                                                   <li class="row list-group-item-action">
                                                         <div class="col d-flex justify-content-around">
                                                                 <h7 style="width: 300px">Prüfung 1</h7>
                                                                 <h7 style="color: gray">Note:</h7>
                                                         </div>
-                                                    </div>
-                                                   <div class="row">
+                                                    </li>
+                                                   <li class="row list-group-item-action">
                                                         <div class="col d-flex justify-content-around">
                                                                 <h7 style="width: 300px">Prüfung 2</h7>
                                                                 <h7 style="color: gray">Note:</h7>
                                                         </div>
-                                                    </div>
-                                                   <div class="row">
+                                                    </li>
+                                                   <li class="row list-group-item-action">
                                                         <div class="col d-flex justify-content-around">
                                                                 <h7 style="width: 300px">Prüfung 3</h7>
                                                                 <h7 style="color: gray">Note:</h7>
                                                         </div>
-                                                    </div>
+                                                    </li>
+                                                   </ul>
                                                </div>
                                       <hr>
-                                      <li class="d-flex justify-content-between align-items-center">
-                                          <h6 class="mb-0" style="width: 200px">Deutsch</h6>
-                                           <h6 class="mb-0">2</h6>
-                                               <a style="color: black" data-toggle="collapse" href="#collapseSubject2" aria-expanded="true" aria-controls="collapseSubject">
-                                                  <i onclick="toggle(this)" class="bi bi-chevron-down" style="font-size: 25px"></i>
-                                                   <script>
-                                                    function toggle(x){
-                                                        x.classList.toggle("bi-chevron-up")
-                                                    }
-                                                   </script>
-                                             </a>
-
-
-
-                                      </li>
-                                            <div class="collapse" id="collapseSubject2">
-                                                           <div class="row">
-                                                                <div class="col d-flex justify-content-around">
-                                                                        <h7 style="width: 300px">Prüfung 1</h7>
-                                                                        <h7 style="color: gray">Note:</h7>
-                                                                </div>
-                                                            </div>
-                                                           <div class="row">
-                                                                <div class="col d-flex justify-content-around">
-                                                                        <h7 style="width: 300px">Prüfung 2</h7>
-                                                                        <h7 style="color: gray">Note:</h7>
-                                                                </div>
-                                                            </div>
-
-                                                       </div>
-
-
-                                      {% for fach in faecher%}
-                                      <li class="d-flex justify-content-between align-items-center">
-                                          <h6 class="mb-0" style="width:200px">{{fach.bezeichnung}}</h6>
-                                          <h6 class="mb-0">Anzahl Schüler</h6>
-                                      </li>
-                                      <hr>
                                       {%endfor%}
-                                  </ul>
+                                         </ul>
+
                             </div>
                           </div>
                       </ul>
@@ -103,14 +71,18 @@
                         <div class="d-flex flex-column align-items-center text-center">
                             <div class="mt-3">
                                 <h4>{{schueler.vorname}} {{schueler.nachname}}</h4>
-                                <h6 style="font-style: italic">Klasse 1a </h6>
-
+                                {% for klasse in klassenListe %}
+                                {% if schueler.klasse_id == klasse.id %}
+                                <h6 style="font-style: italic">{{klasse.bezeichnung}} </h6>
+                                 {% endif %}
+                                {% endfor %}
                                 <ul style="list-style: none; padding-left: 0px">
 
                                     <li class="mb-1">
+                                        {%set origin = namespace(origin='studentdashboard')%}
                                         <a type="button" class="btn btn-primary btn-sm"
-                                                style="background-color: #006633; color: white" data-toggle="modal"
-                                               data-target="#editStudent {{ schueler.id }}">
+                                                style="background-color: #006633; color: white" data-toggle="modal" id="editStudent{{schueler.id}}"
+                                               data-target="#editStudent {{ schueler.id }}" data=origin>
                                             Schüler bearbeiten
                                         </a>
                                     </li>

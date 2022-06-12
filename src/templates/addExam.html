@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{%for fach in faecherListe%}
+      <div class="modal fade" id="addExam {{fach.id}}" tabindex="-1" role="dialog" aria-labelledby="addExamTitle" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                         <div class="modal-header">
+                            <h5 class="modal-title" id="addStudentTitle">Prüfung zu Fach {{fach.bezeichnung}} hinzufügen</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="post" >
+                            <div class="modal-body">
+                                 <div class="column is-4 is-offset-4">
+                                    <div class="box">
+
+                                            <div class="mb-5">
+                                                <div class="d-flex justify-content-between">
+                                                    <label for="bezeichnung"style="margin-bottom: 5px">Bezeichnung:</label>
+                                                    <label for="maxPunkte">Gesamtpunktzahl</label>
+                                                </div>
+                                                 <div class="d-flex justify-content-between" style="margin-bottom: 5px">
+                                                        <input class="form-control" style="width: 300px" name="bezeichnung" id="bezeichnung" placeholder="Name der Prüfung" required="required">
+                                                     <input class="form-control" style="width: 120px; text-align: center" name="maxPunkte" id="maxPunkte" required="required">
+                                                 </div>
+
+                                                <label for="beschreibung" style="margin-bottom: 5px">Beschreibung:</label>
+                                                <textarea class="form-control" rows="3"  name="beschreibung" id="beschreibung" placeholder="hier zusätzliche Informationen einfügen"></textarea>
+
+                                            </div>
+                                            <ul style="padding: 0px">
+                                                <li class="d-flex justify-content-between">
+                                                    <div class="col">
+                                                        <b>Note:</b>
+                                                    </div>
+                                                      {%for i in range(6)%}
+                                                     <div class="col"style="text-align: center">
+                                                        <b>{{loop.index}}</b>
+                                                    </div>
+                                                    {%endfor%}
+                                                </li>
+                                                <hr style="height: 2px; background-color: black">
+                                                <li class="d-flex justify-content-between">
+
+                                                     <div class="col">
+                                                        <b>Punkte Obergrenze:</b>
+                                                    </div>
+
+                                                    {%for i in range(6)%}
+                                                     <div class="d-flex col justify-content-center">
+                                                         <input class="form-control" style="width: 100px;text-align: center" name="note{{loop.index}}" id="note{{loop.index}}">
+                                                    </div>
+                                                    {%endfor%}
+
+                                                </li>
+                                            </ul>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+
+                                <input type="submit" name="submit1" class="btn btn-primary" value="Prüfung hinzufügen" style="background-color: #006633;">
+
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+            	</div>
+{%endfor%}
+</body>
+{% endblock %}
+</html>
