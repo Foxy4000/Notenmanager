@@ -24,7 +24,7 @@
 
                                        <li class="d-flex justify-content-between align-items-center">
                                           <h6 class="mb-0" style="width: 200px">{{fach.Fach.bezeichnung}}</h6>
-                                           <h6 class="mb-0">3</h6>
+                                           <h6 class="mb-0">{{pruefungen|selectattr('Pruefung.fach_id','==', 'fach.Fach.id')|list|count}}</h6>
                                                <a style="color: black" data-toggle="collapse" href="#collapseSubject{{fach.Fach.id}}" aria-expanded="false" aria-controls="collapseSubject">
                                                   <i onclick="toggle(this)" class="bi bi-chevron-down" style="font-size: 25px"></i>
                                                    <script>
@@ -36,24 +36,16 @@
                                       </li>
                                              <div class="collapse" id="collapseSubject{{fach.Fach.id}}">
                                                    <ul>
-                                                   <li class="row list-group-item-action">
-                                                        <div class="col d-flex justify-content-around">
-                                                                <h7 style="width: 300px">Prüfung 1</h7>
-                                                                <h7 style="color: gray">Note:</h7>
-                                                        </div>
-                                                    </li>
-                                                   <li class="row list-group-item-action">
-                                                        <div class="col d-flex justify-content-around">
-                                                                <h7 style="width: 300px">Prüfung 2</h7>
-                                                                <h7 style="color: gray">Note:</h7>
-                                                        </div>
-                                                    </li>
-                                                   <li class="row list-group-item-action">
-                                                        <div class="col d-flex justify-content-around">
-                                                                <h7 style="width: 300px">Prüfung 3</h7>
-                                                                <h7 style="color: gray">Note:</h7>
-                                                        </div>
-                                                    </li>
+                                                       {%for pruefung in pruefungen%}
+                                                            {%if pruefung.Belegung.fach_id== fach.Fach.id%}
+                                                               <li class="row list-group-item-action">
+                                                                    <div class="col d-flex justify-content-around">
+                                                                            <h7 style="width: 300px">{{pruefung.Pruefung.bezeichnung}}</h7>
+                                                                            <h7 style="color: gray">Note:</h7>
+                                                                    </div>
+                                                                </li>
+                                                       {%endif%}
+                                                        {%endfor%}
                                                    </ul>
                                                </div>
                                       <hr>
@@ -79,7 +71,7 @@
                                 <ul style="list-style: none; padding-left: 0px">
 
                                     <li class="mb-1">
-                                        {%set origin = namespace(origin='studentdashboard')%}
+
                                         <a type="button" class="btn btn-primary btn-sm"
                                                 style="background-color: #006633; color: white" data-toggle="modal" id="editStudent{{schueler.id}}"
                                                data-target="#editStudent {{ schueler.id }}" data=origin>

@@ -17,6 +17,7 @@
                             </button>
                         </div>
                         <form method="post" >
+                            <input type="hidden" name="fach_id" id="fach_id" value="{{fach.id}}">
                             <div class="modal-body">
                                  <div class="column is-4 is-offset-4">
                                     <div class="box">
@@ -54,16 +55,24 @@
                                                     </div>
 
                                                     {%for i in range(6)%}
+
                                                      <div class="d-flex col justify-content-center">
-                                                         <input class="form-control" style="width: 100px;text-align: center" name="note{{loop.index}}" id="note{{loop.index}}">
+                                                         <input class="form-control"  style="width: 100px;text-align: center" name="note{{loop.index}}" id="note{{loop.index}}"  value="">
                                                     </div>
+
                                                     {%endfor%}
 
                                                 </li>
                                             </ul>
+                                        <script>
+                                            $('#maxPunkte').keyup(function (){
+                                                $('#note1').val($(this).val());
+                                            });
+                                            $('#note1').keyup(function (){
+                                                $('#maxPunkte').val($(this).val());
+                                            });
 
-
-
+                                        </script>
                                     </div>
                                 </div>
                             </div>

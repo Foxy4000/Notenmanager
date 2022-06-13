@@ -183,6 +183,14 @@ def profile():
                 db.session.commit()
 
             db.session.commit()
+    if request.form.get('submit1') == 'Prüfung hinzufügen':
+        bezeichnung = request.form.get('bezeichnung')
+        notizen = request.form.get('beschreibung')
+        fach_id = request.form.get('fach_id')
+        pruefung = Pruefung(bezeichnung= bezeichnung, notizen= notizen, fach_id= fach_id)
+        db.session.add(pruefung)
+        db.session.commit()
+
 
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
@@ -255,19 +263,28 @@ def viewStudent(student_id):
     faecherListe = Fach.query.all()
     faecherBesucht = []
     faecherNichtBesucht = []
-    origin = "viewStudent"
+    pruefungen = db.session.query(Schueler, Belegung, Pruefung
+                                ).filter(
+                                Schueler.id == Belegung.schueler_id
+                                ).filter(
+                                Belegung.fach_id == Pruefung.fach_id
+                                ).filter(
+                                Schueler.id == student_id
+                                ).all()
+
     faecher = db.session.query(Schueler, Belegung, Fach
-                               ).filter(
-        Schueler.id == Belegung.schueler_id
-    ).filter(
-        Belegung.fach_id == Fach.id
-    ).filter(
-        Schueler.id == student_id
-    ).all()
+                                ).filter(
+                                    Schueler.id == Belegung.schueler_id
+                                ).filter(
+                                    Belegung.fach_id == Fach.id
+                                ).filter(
+                                    Schueler.id == student_id
+                                ).all()
+    origin = "viewStudent"
 
     return render_template("studentdashboard.html", schueler=schueler, faecher=faecher, schuelerList=schuelerListe,
                            faecherListe=faecherListe, klassenListe=klassenListe, faecherBesucht=faecherBesucht,
-                           faecherNichtBesucht=faecherNichtBesucht, origin=origin)
+                           faecherNichtBesucht=faecherNichtBesucht,pruefungen=pruefungen, origin=origin)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
