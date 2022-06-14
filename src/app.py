@@ -425,6 +425,20 @@ def deleteSubject(subject_id):
     return redirect(url_for('profile'))
 
 
+@app.route('/profile/viewClass/<klasse_id>', methods=['GET', 'POST'])
+def viewClass(klasse_id):
+    klasse = Klasse.query.get_or_404(klasse_id)
+    schueler = db.session.query(Schueler).filter(Schueler.klasse_id == klasse_id)
+    return render_template("classDashboard.html", klasse=klasse, schueler=schueler)
+
+
+@app.route('/profile/viewSubject/<fach_id>', methods=['GET', 'POST'])
+def viewSubject(fach_id):
+    fach = Fach.query.get_or_404(fach_id)
+    schueler = db.session.query(Schueler).filter(Belegung.schueler_id == fach_id)
+    return render_template("subjectDashboard.html", fach=fach, schueler=schueler)
+
+
 class Lehrer(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
