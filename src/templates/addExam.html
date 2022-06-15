@@ -25,11 +25,11 @@
                                             <div class="mb-5">
                                                 <div class="d-flex justify-content-between">
                                                     <label for="bezeichnung"style="margin-bottom: 5px">Bezeichnung:</label>
-                                                    <label for="maxPunkte">Gesamtpunktzahl</label>
+                                                    <label for="maxPunkte{{fach.id}}">Gesamtpunktzahl</label>
                                                 </div>
                                                  <div class="d-flex justify-content-between" style="margin-bottom: 5px">
                                                         <input class="form-control" style="width: 300px" name="bezeichnung" id="bezeichnung" placeholder="Name der Prüfung" required="required">
-                                                     <input class="form-control" style="width: 120px; text-align: center" name="maxPunkte" id="maxPunkte" required="required">
+                                                     <input class="form-control" style="width: 120px; text-align: center" name="maxPunkte" id="maxPunkte{{fach.id}}" required="required">
                                                  </div>
 
                                                 <label for="beschreibung" style="margin-bottom: 5px">Beschreibung:</label>
@@ -57,7 +57,7 @@
                                                     {%for i in range(6)%}
 
                                                      <div class="d-flex col justify-content-center">
-                                                         <input class="form-control"  style="width: 100px;text-align: center" name="note{{loop.index}}" id="note{{loop.index}}"  value="">
+                                                         <input class="form-control"  style="width: 100px;text-align: center" name="note{{loop.index}}{{fach.id}}" id="note{{loop.index}}{{fach.id}}"  value="">
                                                     </div>
 
                                                     {%endfor%}
@@ -65,14 +65,51 @@
                                                 </li>
                                             </ul>
                                         <script>
-                                            $('#maxPunkte').keyup(function (){
-                                                $('#note1').val($(this).val());
+                                            $('#maxPunkte{{fach.id}}').keyup(function (){
+                                                $('#note1{{fach.id}}').val($(this).val());
                                             });
-                                            $('#note1').keyup(function (){
-                                                $('#maxPunkte').val($(this).val());
+                                            $('#note1{{fach.id}}').keyup(function (){
+                                                $('#maxPunkte{{fach.id}}').val($(this).val());
                                             });
 
                                         </script>
+                                        <div class="d-flex justify-content-between mb-1" style="padding-left: 60px;padding-right: 20px">
+                                                                        <b>Schüler</b>
+                                                                        <b>Punkte</b>
+                                                                    </div>
+                                        <ul>
+
+
+											{% for schueler in schuelerList %}
+												{% for belegung in belegungListe %}
+													{% if belegung.fach_id == fach.id %}
+														{% if schueler.id == belegung.schueler_id %}
+																<li class="mb-1" style="list-style: none" >
+
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <div class="d-flex">
+                                                                             <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam{{fach.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." unchecked>
+                                                                            {{schueler.vorname}} {{schueler.nachname}}
+                                                                        </div>
+                                                                     <input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints{{fach.id}}{{schueler.id}}" required="required" value="" disabled>
+                                                                        <script>
+                                                                                    document.getElementById('addToExam{{fach.id}}{{schueler.id}}').onchange = function (){
+                                                                                    document.getElementById('achievedPoints{{fach.id}}{{schueler.id}}').disabled=!this.checked;
+                                                                            }
+                                                                        </script>
+                                                                    </div>
+
+
+
+                                                                </li>
+
+														{% endif %}
+													{% endif %}
+												{% endfor %}
+											{% endfor %}
+
+
+                                        </ul>
                                     </div>
                                 </div>
                             </div>

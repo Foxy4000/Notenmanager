@@ -106,7 +106,6 @@ def register():
 @app.route("/profile", methods=['POST', 'GET', 'DELETE'])
 @login_required
 def profile():
-
     if request.form.get('submit1') == 'Schüler hinzufügen':
         vorname = request.form.get('name')
         nachname = request.form.get('surname')
@@ -129,7 +128,7 @@ def profile():
 
     if request.form.get('submit1') == 'Fach hinzufügen':
         bezeichnung = request.form.get('bezeichnung')
-        lehrer_id = request.form.get('klasse_lehrer')     
+        lehrer_id = request.form.get('klasse_lehrer')
         fach = Fach(bezeichnung=bezeichnung, lehrer_id=lehrer_id)
         db.session.add(fach)
         db.session.commit()
@@ -153,8 +152,7 @@ def profile():
                 db.session.add(checkPruefung)
                 db.session.commit()
 
-
-#Klasse anlegen
+    # Klasse anlegen
     if request.form.get('submit1') == 'Klasse hinzufügen':
         bezeichnung = request.form.get('bezeichnung')
         lehrer_id = request.form.get('klasse_lehrer')
@@ -179,10 +177,19 @@ def profile():
         bezeichnung = request.form.get('bezeichnung')
         notizen = request.form.get('beschreibung')
         fach_id = request.form.get('fach_id')
-        pruefung = Pruefung(bezeichnung= bezeichnung, notizen= notizen, fach_id= fach_id)
+        pruefung = Pruefung(bezeichnung=bezeichnung, notizen=notizen, fach_id=fach_id)
         db.session.add(pruefung)
         db.session.commit()
-
+        pruefung = Pruefung.query.order_by(Pruefung.id.desc()).first()
+        bewertungListe = request.form.getlist('examStudent')
+        notenliste = request.form.getlist('achievedPoints')
+        for schuelerId in bewertungListe:
+            id = schuelerId
+            pruefung_id = pruefung.id
+            note = notenliste[bewertungListe.index(schuelerId)]
+            bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=note)
+            db.session.add(bewertung)
+            db.session.commit()
 
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
@@ -207,33 +214,32 @@ def profile():
 @login_required
 def exportStudentList(class_id):
     klasse = Klasse.query.get_or_404(class_id)
-    
+
     filename = tk.filedialog.asksaveasfilename(
         title='Speichern als...',
         filetypes=filetypes,
         defaultextension='.csv'
     )
-    
+
     if filename != '':
         with open(filename, 'w', newline='') as csvfile:
-            csvwriter = csv.writer(csvfile, delimiter = ';')
+            csvwriter = csv.writer(csvfile, delimiter=';')
             schuelerListe = Schueler.query.filter_by(klasse_id=class_id)
             lehrerListe = Lehrer.query.all()
             lehrer = None
             for lehrerAusListe in lehrerListe:
                 if lehrerAusListe.id == klasse.lehrer_id:
                     lehrer = lehrerAusListe
-            
+
             csvwriter.writerow(["Klasse:", klasse.bezeichnung])
             csvwriter.writerow(["Lehrer:", lehrer.vorname, lehrer.nachname])
             csvwriter.writerow([])
             csvwriter.writerow(["Vorname", "Nachname"])
-            
+
             for schueler in schuelerListe:
                 csvwriter.writerow([schueler.vorname, schueler.nachname])
-            flash("Schülerliste wurden exportiert")    
+            flash("Schülerliste wurden exportiert")
     return redirect(url_for('profile'))
-
 
 
 @app.route("/profile/searchStudent", methods=['GET', 'POST'])
@@ -246,7 +252,6 @@ def searchStudent():
     return redirect(url_for('profile'))
 
 
-
 @app.route('/profile/viewStudent/<student_id>', methods=['GET', 'POST'])
 @login_required
 def viewStudent(student_id):
@@ -257,27 +262,29 @@ def viewStudent(student_id):
     faecherBesucht = []
     faecherNichtBesucht = []
     pruefungen = db.session.query(Schueler, Belegung, Pruefung
-                                ).filter(
-                                Schueler.id == Belegung.schueler_id
-                                ).filter(
-                                Belegung.fach_id == Pruefung.fach_id
-                                ).filter(
-                                Schueler.id == student_id
-                                ).all()
+                                  ).filter(
+        Schueler.id == Belegung.schueler_id
+    ).filter(
+        Belegung.fach_id == Pruefung.fach_id
+    ).filter(
+        Schueler.id == student_id
+    ).all()
 
     faecher = db.session.query(Schueler, Belegung, Fach
-                                ).filter(
-                                    Schueler.id == Belegung.schueler_id
-                                ).filter(
-                                    Belegung.fach_id == Fach.id
-                                ).filter(
-                                    Schueler.id == student_id
-                                ).all()
+                               ).filter(
+        Schueler.id == Belegung.schueler_id
+    ).filter(
+        Belegung.fach_id == Fach.id
+    ).filter(
+        Schueler.id == student_id
+    ).all()
     origin = "viewStudent"
-
+    bewertung = db.session.query(Schueler, Bewertung).filter(Schueler.id == Bewertung.schueler_id).filter(
+        Schueler.id == student_id).all()
     return render_template("studentdashboard.html", schueler=schueler, faecher=faecher, schuelerList=schuelerListe,
                            faecherListe=faecherListe, klassenListe=klassenListe, faecherBesucht=faecherBesucht,
-                           faecherNichtBesucht=faecherNichtBesucht,pruefungen=pruefungen, origin=origin)
+                           faecherNichtBesucht=faecherNichtBesucht, pruefungen=pruefungen, bewertungen=bewertung,
+                           origin=origin)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
@@ -315,19 +322,18 @@ def editStudent(student_id):
 
 @app.route('/profile/editClass/<klasse_id>', methods=['POST', 'GET'])
 def editClass(klasse_id):
-
     if request.method == 'POST':
         klasse = Klasse.query.get_or_404(klasse_id)
 
         bezeichnung = request.form.get('bezeichnung')
         klasse.bezeichnung = bezeichnung
-       
+
         if request.form.get('klasse_lehrer'):
             lehrer_id = request.form.get('klasse_lehrer')
             klasse.lehrer_id = lehrer_id
-            
+
         db.session.add(klasse)
-        db.session.commit()              
+        db.session.commit()
 
         if request.form.getlist('klasse_schueler'):
             schuelerListe = Schueler.query.filter_by(klasse_id=klasse_id)
@@ -340,8 +346,8 @@ def editClass(klasse_id):
                 schueler = Schueler.query.get_or_404(schueler_id)
                 schueler.klasse_id = klasse_id
                 db.session.add(schueler)
-                db.session.commit()               
-        flash(klasse.bezeichnung + " wurde bearbeitet")   
+                db.session.commit()
+        flash(klasse.bezeichnung + " wurde bearbeitet")
     return redirect(url_for('profile'))
 
 
@@ -375,23 +381,21 @@ def deleteClass(klasse_id):
     return redirect(url_for('profile'))
 
 
-
 @app.route('/profile/editSubject/<fach_id>', methods=['POST', 'GET'])
 @login_required
 def editSubject(fach_id):
-    
     if request.method == 'POST':
-        fach = Fach.query.get_or_404(fach_id)    
+        fach = Fach.query.get_or_404(fach_id)
         bezeichnung = request.form.get('bezeichnung')
         fach.bezeichnung = bezeichnung
-        
+
         if request.form.get('fach_lehrer'):
             lehrer_id = request.form.get('fach_lehrer')
             fach.lehrer_id = lehrer_id
-            
+
         db.session.add(fach)
-        db.session.commit()            
-            
+        db.session.commit()
+
         if request.form.get('fach_schueler'):
             belegungListe = Belegung.query.filter_by(fach_id=fach_id)
             for belegung in belegungListe:
@@ -488,7 +492,6 @@ class Pruefung(db.Model):
     bezeichnung = db.Column(db.String(100), unique=True)
     notizen = db.Column(db.String(100), unique=True)
     fach_id = db.Column(db.Integer, primary_key=True)
-
 
 
 app.run(debug=True)

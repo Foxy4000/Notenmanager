@@ -24,7 +24,10 @@
 
                                        <li class="d-flex justify-content-between align-items-center">
                                           <h6 class="mb-0" style="width: 200px">{{fach.Fach.bezeichnung}}</h6>
-                                           <h6 class="mb-0">{{pruefungen|selectattr('Pruefung.fach_id','==', 'fach.Fach.id')|list|count}}</h6>
+
+                                           <h6 class="mb-0">{{pruefungen|selectattr('1', '==','{{fach.Fach.id}}')|list|length}}</h6>
+
+
                                                <a style="color: black" data-toggle="collapse" href="#collapseSubject{{fach.Fach.id}}" aria-expanded="false" aria-controls="collapseSubject">
                                                   <i onclick="toggle(this)" class="bi bi-chevron-down" style="font-size: 25px"></i>
                                                    <script>
@@ -37,14 +40,18 @@
                                              <div class="collapse" id="collapseSubject{{fach.Fach.id}}">
                                                    <ul>
                                                        {%for pruefung in pruefungen%}
-                                                            {%if pruefung.Belegung.fach_id== fach.Fach.id%}
+                                                        {%for bewertung in bewertungen%}
+                                                            {%if pruefung.Belegung.fach_id == fach.Fach.id%}
+                                                            {%if bewertung.Bewertung.pruefung_id== pruefung.Pruefung.id%}
                                                                <li class="row list-group-item-action">
                                                                     <div class="col d-flex justify-content-around">
                                                                             <h7 style="width: 300px">{{pruefung.Pruefung.bezeichnung}}</h7>
-                                                                            <h7 style="color: gray">Note:</h7>
+                                                                            <h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
                                                                     </div>
                                                                 </li>
                                                        {%endif%}
+                                                       {%endif%}
+                                                       {%endfor%}
                                                         {%endfor%}
                                                    </ul>
                                                </div>
