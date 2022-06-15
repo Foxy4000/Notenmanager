@@ -1,27 +1,19 @@
 # -*- coding: utf-8 -*-
-import json
 import csv
 import tkinter as tk
-
-from flask import Flask, render_template, Blueprint, session, request, flash, url_for
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import redirect
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, Length
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_csv import send_csv
 from tkinter import filedialog
 
-
-
-
+from flask import Flask, render_template, Blueprint, request, flash, url_for
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import redirect
+from flask_csv import send_csv
+from tkinter import filedialog
 
 # from . import db
 
 # Create a Flask Instance
-from sqlalchemy.orm import Session
-from pickle import NONE
 
 app = Flask(__name__)
 main = Blueprint('main', __name__)
@@ -195,6 +187,7 @@ def profile():
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
+    bewertungsListe = Bewertung.query.all()
     faecherBesucht = []
     faecherNichtBesucht = []
     schuelerList = Schueler.query.all()
@@ -207,7 +200,7 @@ def profile():
     return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList,
                            klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe,
                            faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer,
-                           lehrerListe=lehrerListe, origin=origin)
+                           lehrerListe=lehrerListe, bewertungsListe=bewertungsListe, origin=origin)
 
 
 @app.route("/profile/exportStudentList/<class_id>", methods=['GET', 'POST'])
@@ -479,7 +472,7 @@ class Klasse(db.Model):
 
 
 class Bewertung(db.Model):
-    fach_id = db.Column(db.Integer, primary_key=True)
+    pruefung_id = db.Column(db.Integer, primary_key=True)
     schueler_id = db.Column(db.Integer, primary_key=True)
     punkte = db.Column(db.Integer, nullable=True)
 

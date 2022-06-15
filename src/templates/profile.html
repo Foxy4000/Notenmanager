@@ -4,10 +4,10 @@
 {% include 'createSubject.html' %}
 {% include 'addstudent.html'%}
 {% include 'addExam.html' %}
+{% include 'editExam.html' %}
 {% include 'editClass.html' %}
 {% include 'editSubject.html' %}
 {% include 'editstudent.html'%}
-
 
 
 {% extends 'base.html' %}
@@ -80,7 +80,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     {% if current_user.ist_administrator %}
                                     <li>
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#editClass {{ klasse.id }}">bearbeiten</a>
+                                        <a class="dropdown-item" data-toggle="modal" data-target="#editClass {{ klasse.id }}">Klasse bearbeiten</a>
                                     </li>
                                        
                                     <li>
@@ -200,15 +200,29 @@
                                          <a class="dropdown-item" data-toggle="modal"
                                            data-target="#addExam {{fach.id}}"
                                            data=lehrerListe, belegungList, schuelerList>
-                                            Prüfung hinzufügen</a>
+                                            Prüfung hinzufügen
+                                         </a>
 
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
+
+
+                                        <a class="dropdown-item" data-toggle="modal"
+                                           data-target="#editExam {{fach.id}}"
+                                        data=lehrerListe, belegungList, schuelerList, bewertungsListe, pruefungListe>
+                                            Prüfung bearbeiten
+                                        </a>
+
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+
                                         <a class="dropdown-item" data-toggle="modal"
                                            data-target="#editSubject {{fach.id}}"
                                            data=lehrerListe, belegungList, schuelerList>
-                                            bearbeiten</a>
+                                            Fach bearbeiten
+                                        </a>
 
                                         <li>
                                             <hr class="dropdown-divider">
@@ -296,7 +310,7 @@
 
                                         <li>
                                             <a class="dropdown-item" data-toggle="modal" id="editStudent{{schueler.id}}"
-                                               data-target="#editStudent {{ schueler.id }}" data-originOfAction="profile">bearbeiten</a>
+                                               data-target="#editStudent {{ schueler.id }}" data-originOfAction="profile">Schüler bearbeiten</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
