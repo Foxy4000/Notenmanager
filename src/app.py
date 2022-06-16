@@ -394,6 +394,23 @@ def deleteClass(klasse_id):
     return redirect(url_for('profile'))
 
 
+@app.route('/profile/deletePruefung/<pruefung_id>', methods=['POST', 'GET'])
+@login_required
+def deletePruefung(pruefung_id):
+    if current_user.ist_administartor:
+        bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
+        for bewertung in bewertungListe:
+            db.session.delete(bewertung)
+            db.session.commit()
+        pruefung = Pruefung.query.get_or_404(pruefung_id)
+        db.session.delete(pruefung)
+        db.session.commit()
+        flash("Prüfung " + pruefung.bezeichnung + " wurde entfernt.")
+    else:
+        flash("Keine Berechtigung!")
+    return redirect(url_for('profile'))
+
+
 @app.route('/profile/editSubject/<fach_id>', methods=['POST', 'GET'])
 @login_required
 def editSubject(fach_id):
