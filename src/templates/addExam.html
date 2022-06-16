@@ -57,7 +57,7 @@
                                                     {%for i in range(6)%}
 
                                                      <div class="d-flex col justify-content-center">
-                                                         <input class="form-control"  style="width: 100px;text-align: center" name="note{{loop.index}}{{fach.id}}" id="note{{loop.index}}{{fach.id}}"  value="">
+                                                         <input class="form-control"  style="width: 100px;text-align: center" name="punkteObergrenze" id="note{{loop.index}}{{fach.id}}"  value="">
                                                     </div>
 
                                                     {%endfor%}
@@ -81,6 +81,7 @@
 
 
 											{% for schueler in schuelerList %}
+											{% if schueler.klasse_id == klasse_id %}
 												{% for belegung in belegungListe %}
 													{% if belegung.fach_id == fach.id %}
 														{% if schueler.id == belegung.schueler_id %}
@@ -91,7 +92,7 @@
                                                                              <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam{{fach.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." unchecked>
                                                                             {{schueler.vorname}} {{schueler.nachname}}
                                                                         </div>
-                                                                     <input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints{{fach.id}}{{schueler.id}}" required="required" value="" disabled>
+                                                                     <input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints{{fach.id}}{{schueler.id}}" value="" disabled>
                                                                         <script>
                                                                                     document.getElementById('addToExam{{fach.id}}{{schueler.id}}').onchange = function (){
                                                                                     document.getElementById('achievedPoints{{fach.id}}{{schueler.id}}').disabled=!this.checked;
@@ -106,6 +107,7 @@
 														{% endif %}
 													{% endif %}
 												{% endfor %}
+											{% endif %}
 											{% endfor %}
 
 

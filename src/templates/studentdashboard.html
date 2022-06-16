@@ -38,27 +38,62 @@
                                              </a>
                                       </li>
                                              <div class="collapse" id="collapseSubject{{fach.Fach.id}}">
+                                             <table class="table">
+                                             <thead>
+    											<tr>
+    											  <th scope="col">Prüfung</th>
+											      <th scope="col">Punkte</th>
+											      <th scope="col">Note</th>
+											    </tr>
+											 </thead>
+											 <tbody>
                                                    <ul>
                                                        {%for pruefung in pruefungen%}
                                                         {%for bewertung in bewertungen%}
                                                             {%if pruefung.Belegung.fach_id == fach.Fach.id%}
                                                             {%if bewertung.Bewertung.pruefung_id== pruefung.Pruefung.id%}
+                                                            <tr>
                                                                <li class="row list-group-item-action">
-                                                                    <div class="col d-flex justify-content-around">
-                                                                            <h7 style="width: 300px">{{pruefung.Pruefung.bezeichnung}}</h7>
-                                                                            <h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
-                                                                    </div>
-                                                                </li>
+                                                                    
+                                                                            <td><h7 style="width: 300px">{{pruefung.Pruefung.bezeichnung}}</h7></td>
+                                                                            <td>
+                                                                            {% if bewertung.Bewertung.punkte is not none %}
+                                                                            	<h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
+                                                                            {% endif %}
+                                                                            </td>
+                                                                            <td>
+												                           	{% if bewertung.Bewertung.punkte is not none %}
+																				{% for notenschluessel in notenschluesselListe %}
+																				{% if notenschluessel.pruefung_id == pruefung.Pruefung.id %}
+																					{% if bewertung.Bewertung.punkte <= notenschluessel.punkte_obergrenze %}
+																						{% if loop.nextitem is defined %}
+																							{% if bewertung.Bewertung.punkte > loop.nextitem.punkte_obergrenze %}
+																								<h7 style="color: gray">{{notenschluessel.note}}</h7>
+																							{% endif %}	
+																						{% else %}
+																							<h7 style="color: gray">{{notenschluessel.note}}</h7>
+																						{% endif %}
+																					
+																					{% endif %}
+																				{% endif %}
+																				{% endfor %}
+																			{% endif %} 
+																			</td>                                                     
+                                                            </tr>
+                                                            
+                                                          </li>
                                                        {%endif%}
                                                        {%endif%}
                                                        {%endfor%}
-                                                        {%endfor%}
+                                                       {%endfor%}
                                                    </ul>
+                                                  
+                                                  </tbody>
+                                                  </table>
                                                </div>
                                       <hr>
                                       {%endfor%}
-                                         </ul>
-
+                                      </ul>
                             </div>
                           </div>
                       </ul>

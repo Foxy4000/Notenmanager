@@ -181,16 +181,28 @@ def profile():
         db.session.add(pruefung)
         db.session.commit()
         pruefung = Pruefung.query.order_by(Pruefung.id.desc()).first()
+        pruefung_id = pruefung.id
         bewertungListe = request.form.getlist('examStudent')
         notenliste = request.form.getlist('achievedPoints')
         for schuelerId in bewertungListe:
             id = schuelerId
-            pruefung_id = pruefung.id
             note = notenliste[bewertungListe.index(schuelerId)]
-            bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=note)
+            
+            if note is not '':
+                note = int(note)
+                bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=note)
+            else:
+                bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=None)
             db.session.add(bewertung)
             db.session.commit()
-
+        punkteObergrenze = request.form.getlist('punkteObergrenze')
+        i = 1
+        for punkte in punkteObergrenze:
+            notenschluessel = Notenschluessel(note=i, punkte_obergrenze=punkte, pruefung_id=pruefung_id)
+            i = i + 1
+            db.session.add(notenschluessel)
+            db.session.commit()
+            
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
@@ -259,6 +271,7 @@ def viewStudent(student_id):
     schuelerListe = Schueler.query.all()
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
+    notenschluesselListe = Notenschluessel.query.all()
     faecherBesucht = []
     faecherNichtBesucht = []
     pruefungen = db.session.query(Schueler, Belegung, Pruefung
@@ -284,7 +297,7 @@ def viewStudent(student_id):
     return render_template("studentdashboard.html", schueler=schueler, faecher=faecher, schuelerList=schuelerListe,
                            faecherListe=faecherListe, klassenListe=klassenListe, faecherBesucht=faecherBesucht,
                            faecherNichtBesucht=faecherNichtBesucht, pruefungen=pruefungen, bewertungen=bewertung,
-                           origin=origin)
+                           origin=origin, notenschluesselListe=notenschluesselListe)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
@@ -455,6 +468,13 @@ class Lehrer(db.Model, UserMixin):
 
     # def verify_password(self, pwd):
     #   return check_password_hash(self.passwort, pwd)
+
+
+class Notenschluessel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    note = db.Column(db.Integer, nullable=True)
+    punkte_obergrenze = db.Column(db.Integer, nullable=True)
+    pruefung_id = db.Column(db.Integer, nullable=True)
 
 
 class Schueler(db.Model):
