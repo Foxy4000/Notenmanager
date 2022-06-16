@@ -397,17 +397,15 @@ def deleteClass(klasse_id):
 @app.route('/profile/deletePruefung/<pruefung_id>', methods=['POST', 'GET'])
 @login_required
 def deletePruefung(pruefung_id):
-    if current_user.ist_administartor:
-        bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
-        for bewertung in bewertungListe:
-            db.session.delete(bewertung)
-            db.session.commit()
-        pruefung = Pruefung.query.get_or_404(pruefung_id)
-        db.session.delete(pruefung)
+
+    bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
+    for bewertung in bewertungListe:
+        db.session.delete(bewertung)
         db.session.commit()
-        flash("Prüfung " + pruefung.bezeichnung + " wurde entfernt.")
-    else:
-        flash("Keine Berechtigung!")
+    pruefung = Pruefung.query.get_or_404(pruefung_id)
+    db.session.delete(pruefung)
+    db.session.commit()
+    flash("Prüfung " + pruefung.bezeichnung + " wurde entfernt.")
     return redirect(url_for('profile'))
 
 
@@ -455,15 +453,18 @@ def deleteSubject(subject_id):
 @app.route('/profile/viewClass/<klasse_id>', methods=['GET', 'POST'])
 def viewClass(klasse_id):
     klasse = Klasse.query.get_or_404(klasse_id)
-    schueler = db.session.query(Schueler).filter(Schueler.klasse_id == klasse_id)
-    return render_template("classDashboard.html", klasse=klasse, schueler=schueler)
+    schuelerDerKlasse = db.session.query(Schueler).order_by(Schueler.nachname).filter(Schueler.klasse_id == klasse_id)
+    faecherDerKlasse = db.session.query(Fach).order_by(Fach.bezeichnung).filter(Schueler.klasse_id == klasse_id)
+    examenDerKlasse = db.session.query(Pruefung).order_by(Pruefung.bezeichnung).filter(Schueler.klasse_id == klasse_id)
+    return render_template("classDashboard.html", klasse=klasse, schuelerDerKlasse=schuelerDerKlasse,
+                           faecherDerKlasse=faecherDerKlasse, examenDerKlasse=examenDerKlasse)
 
 
 @app.route('/profile/viewSubject/<fach_id>', methods=['GET', 'POST'])
 def viewSubject(fach_id):
     fach = Fach.query.get_or_404(fach_id)
-    schueler = db.session.query(Schueler).filter(Belegung.schueler_id == fach_id)
-    return render_template("subjectDashboard.html", fach=fach, schueler=schueler)
+    schuelerDesFaches = db.session.query(Schueler).order_by(Schueler.nachname).filter(Belegung.schueler_id == fach_id)
+    return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches)
 
 
 class Lehrer(db.Model, UserMixin):
