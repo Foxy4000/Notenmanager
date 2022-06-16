@@ -74,14 +74,11 @@
 
                                         </script>
                                         <div class="d-flex justify-content-between mb-1" style="padding-left: 60px;padding-right: 20px">
-                                                                        <b>Schüler</b>
-                                                                        <b>Punkte</b>
-                                                                    </div>
+                                        <b>Schüler</b>
+                                        <b>Punkte</b>
+                                        </div>
                                         <ul>
-
-
 											{% for schueler in schuelerList %}
-											{% if schueler.klasse_id == klasse_id %}
 												{% for belegung in belegungListe %}
 													{% if belegung.fach_id == fach.id %}
 														{% if schueler.id == belegung.schueler_id %}
@@ -99,18 +96,11 @@
                                                                             }
                                                                         </script>
                                                                     </div>
-
-
-
                                                                 </li>
-
 														{% endif %}
 													{% endif %}
 												{% endfor %}
-											{% endif %}
 											{% endfor %}
-
-
                                         </ul>
                                     </div>
                                 </div>
@@ -119,7 +109,6 @@
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
 
                                 <input type="submit" name="submit1" class="btn btn-primary" value="Prüfung hinzufügen" style="background-color: #006633;">
-
                             </div>
                         </form>
                         </div>

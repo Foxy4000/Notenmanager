@@ -257,10 +257,10 @@ def exportStudentList(class_id):
 @app.route("/profile/searchStudent", methods=['GET', 'POST'])
 @login_required
 def searchStudent():
-    if request.method == 'POST':
-        student_id = request.args.get('searched')
+    student_id = request.form.get('searched')
+    if student_id is not None:
         return redirect(url_for('viewStudent', student_id=student_id))
-    flash("Funktioniert noch nicht")
+    else: flash("Funktioniert noch nicht")
     return redirect(url_for('profile'))
 
 
