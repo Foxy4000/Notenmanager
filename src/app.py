@@ -460,11 +460,17 @@ def viewClass(klasse_id):
                            faecherDerKlasse=faecherDerKlasse, examenDerKlasse=examenDerKlasse)
 
 
-@app.route('/profile/viewSubject/<fach_id>', methods=['GET', 'POST'])
-def viewSubject(fach_id):
-    fach = Fach.query.get_or_404(fach_id)
-    schuelerDesFaches = db.session.query(Schueler).order_by(Schueler.nachname).filter(Belegung.schueler_id == fach_id)
-    return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches)
+@app.route('/profile/viewSubject/<subject_id>', methods=['GET', 'POST'])
+def viewSubject(subject_id):
+    fach = Fach.query.get_or_404(subject_id)
+    schuelerDesFaches = db.session.query(Schueler).order_by(Schueler.nachname).filter(Belegung.schueler_id == subject_id)
+    klassenDesFaches = db.session.query(Klasse).order_by(Klasse.bezeichnung).filter(Schueler.id == subject_id)
+    examenDesFaches = db.session.query(Pruefung).order_by(Pruefung.bezeichnung).filter(
+                                       Schueler.id == Belegung.schueler_id).filter(
+                                       Belegung.fach_id == Pruefung.fach_id).all()
+
+    return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches,
+                           klassenDesFaches=klassenDesFaches, examenDesFaches=examenDesFaches)
 
 
 class Lehrer(db.Model, UserMixin):

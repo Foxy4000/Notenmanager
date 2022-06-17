@@ -183,7 +183,7 @@
                         <ul style="list-style: none; padding-left: 0px">
                             {%for fach in faecherListe%}
                             <li class="d-flex justify-content-between align-items-center">
-                                <a href="{{url_for('viewSubject', fach_id = fach.id)}}" style="text-decoration: none; color: black">
+                                <a href="{{url_for('viewSubject', subject_id = fach.id)}}" style="text-decoration: none; color: black">
                                 <h6 class="mb-0" style="width:400px">{{fach.bezeichnung}}</h6>
                                 <h6></h6>
                                 </a>
