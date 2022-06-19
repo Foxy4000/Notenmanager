@@ -335,9 +335,10 @@ def editStudent(student_id):
 
 @app.route('/profile/editClass/<klasse_id>', methods=['POST', 'GET'])
 def editClass(klasse_id):
+    origin = None
     if request.method == 'POST':
         klasse = Klasse.query.get_or_404(klasse_id)
-
+        origin = request.form.get('origin')
         bezeichnung = request.form.get('bezeichnung')
         klasse.bezeichnung = bezeichnung
 
@@ -361,8 +362,11 @@ def editClass(klasse_id):
                 db.session.add(schueler)
                 db.session.commit()
         flash(klasse.bezeichnung + " wurde bearbeitet")
-    return redirect(url_for('profile'))
 
+    if origin == "profile":
+        return redirect(url_for('profile'))
+    else:
+        return redirect(url_for('viewClass', klasse_id=klasse_id))
 
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])
 @login_required
@@ -384,7 +388,7 @@ def deleteClass(klasse_id):
         for schueler in schuelerListe:
             schueler.klasse_id = None
             db.session.add(schueler)
-            db.session.commit(schueler)
+            db.session.commit()
         klasse = Klasse.query.get_or_404(klasse_id)
         db.session.delete(klasse)
         db.session.commit()
@@ -412,7 +416,9 @@ def deletePruefung(pruefung_id):
 @app.route('/profile/editSubject/<fach_id>', methods=['POST', 'GET'])
 @login_required
 def editSubject(fach_id):
+    origin = None
     if request.method == 'POST':
+        origin = request.form.get('origin')
         fach = Fach.query.get_or_404(fach_id)
         bezeichnung = request.form.get('bezeichnung')
         fach.bezeichnung = bezeichnung
@@ -437,8 +443,10 @@ def editSubject(fach_id):
 
         flash(fach.bezeichnung + " wurde bearbeitet")
 
-    return redirect(url_for('profile'))
-
+    if origin == "profile":
+        return redirect(url_for('profile'))
+    else:
+        return redirect(url_for('viewSubject', subject_id=fach_id))
 
 @app.route('/profile/deleteSubject/<subject_id>', methods=['POST'])
 @login_required
