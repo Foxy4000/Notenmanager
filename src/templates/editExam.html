@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 {% block content %}
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-{%for fach in faecherListe%}
 {%for pruefung in pruefungListe%}
-<div class="modal fade" id="editExam {{pruefung.id}}" tabindex="-1" role="dialog" aria-labelledby="editExamTitle"
-     aria-hidden="true">
+<div class="modal fade" id="editExam{{pruefung.id}}" tabindex="-1" role="dialog" aria-labelledby="editExam" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addStudentTitle">Prüfung zum ausgewählten Fach bearbeiten</h5>
+                <h5 class="modal-title" id="editExam">Prüfung zum ausgewählten Fach bearbeiten</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -69,22 +67,106 @@
 
                                 </li>
                             </ul>
+                                        <script>
+                                            $('#maxPunkte{{pruefung.id}}').keyup(function (){
+                                                $('#note1{{pruefung.id}}').val($(this).val());
+                                            });
+                                            $('#note1{{pruefung.id}}').keyup(function (){
+                                                $('#maxPunkte{{pruefung.id}}').val($(this).val());
+                                            });
 
+                                        </script>
+                                        
+                                        <div class="d-flex justify-content-between mb-1" style="padding-left: 60px;padding-right: 20px">
+                                        <b>Schüler</b>
+                                        <b>Punkte</b>
+                                        </div>
+                                        <ul>
+                                        	{% set ns = namespace(schuelerOhneBewertung=[]) %}
+                                        	{% set ns2 = namespace(schuelerMitBewertung=[]) %}
+											{% for schueler in schuelerList %}
+												{% for belegung in belegungListe %}
+												{% for p in pruefungListe %}
+												{% if p.id == pruefung.id %}
+												{% for fach in faecherListe %}
+												{% if fach.id == p.fach_id %}
+													{% if belegung.fach_id == fach.id %}
+														{% if schueler.id == belegung.schueler_id %}
+														 {% for bewertung in bewertungsListe %}
+														 	{% if bewertung.pruefung_id == pruefung.id %}
+														 		{% if bewertung.schueler_id == schueler.id %}
+																	
+																<li class="mb-1" style="list-style: none" >
+
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <div class="d-flex">
+                                                                             <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam1{{pruefung.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." checked>
+                                                                            {{schueler.vorname}} {{schueler.nachname}}
+                                                                        </div>
+                                                                     <input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints1{{pruefung.id}}{{schueler.id}}" value={{bewertung.punkte}} enabled>
+                                                                        <script>
+                                                                                    document.getElementById('addToExam1{{pruefung.id}}{{schueler.id}}').onchange = function (){
+                                                                                    document.getElementById('achievedPoints1{{pruefung.id}}{{schueler.id}}').disabled=!this.checked;
+                                                                            }
+                                                                        </script>
+                                                                    </div>
+                                                                </li>																	
+																{% set ns2.schuelerMitBewertung = ns2.schuelerMitBewertung + [schueler] %}
+
+																	{% endif %}
+																{% else %}
+																	{% if schueler not in ns.schuelerOhneBewertung %}
+																		{% set ns.schuelerOhneBewertung = ns.schuelerOhneBewertung + [schueler] %}
+																	{% endif %}
+
+																{% endif %}
+															{% endfor %}
+														{% endif %}
+													{% endif %}
+													{% endif %}
+													{% endfor %}
+													{% endif %}
+													{% endfor %}]
+												{% endfor %}
+											{% endfor %}
+											{% for schueler in ns.schuelerOhneBewertung %}
+												{% if schueler not in ns2.schuelerMitBewertung %}
+																<li class="mb-1" style="list-style: none" >
+
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <div class="d-flex">
+                                                                             <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam2{{pruefung.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." unchecked>
+                                                                            {{schueler.vorname}} {{schueler.nachname}}
+                                                                        </div>
+                                                                     		<input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints2{{pruefung.id}}{{schueler.id}}" value="" disabled>
+                                                                        <script>
+                                                                                    document.getElementById('addToExam2{{pruefung.id}}{{schueler.id}}').onchange = function (){
+                                                                                    document.getElementById('achievedPoints2{{pruefung.id}}{{schueler.id}}').disabled=!this.checked;
+                                                                            }
+                                                                        </script>
+                                                                    </div>
+                                                                </li>
+                                             	{% endif %}
+                                             {% endfor %}											
+											
+											
+                                        </ul>							
+
+
+						
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
 
-                    <input type="submit" name="submit1" class="btn btn-primary" value="Prüfung bearbeiten"
-                           style="background-color: #006633;">
+                    <input type="submit" name="submit1" class="btn btn-primary" value="Prüfung bearbeiten" style="background-color: #006633;">
 
                 </div>
             </form>
         </div>
     </div>
 </div>
-{%endfor%}
 {%endfor%}
 </body>
 {% endblock %}
