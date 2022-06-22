@@ -6,7 +6,10 @@
     <title>Title</title>
 </head>
 <body>
+
 {%for pruefung in pruefungListe%}
+
+
 <div class="modal fade" id="editExam{{pruefung.id}}" tabindex="-1" role="dialog" aria-labelledby="editExam" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -16,7 +19,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="post">
+            <form method="POST" action="{{ url_for('editExam', pruefung_id=pruefung.id) }}">
                 <div class="modal-body">
                     <div class="column is-4 is-offset-4">
                         <div class="box">
@@ -30,8 +33,17 @@
                                     <input class="form-control" style="width: 300px" name="bezeichnung" id="bezeichnung"
                                            placeholder="Name der Prüfung bearbeiten" required="required"
                                            value="{{ pruefung.bezeichnung }}">
-                                    <input class="form-control" style="width: 120px; text-align: center"
-                                           name="maxPunkte" id="maxPunkte" required="required">
+                                           
+									{% for punkte_obergrenze in notenschluesselListe %}
+		                                    {% if punkte_obergrenze.pruefung_id == pruefung.id %}
+			                                    {% if punkte_obergrenze.note == 1%}                                    
+			                                    <input class="form-control" style="width: 120px; text-align: center"
+			                                           name="maxPunkte" id="maxPunkte" required="required" value={{punkte_obergrenze.punkte_obergrenze}}>
+                                           		{% endif %}
+                                           	{% endif %}
+                                    {% endfor %}
+                                           
+                                           
                                 </div>
 
                                 <label for="beschreibung" style="margin-bottom:
@@ -57,13 +69,18 @@
                                     <div class="col">
                                         <b>Punkte Obergrenze:</b>
                                     </div>
-
-                                    {%for i in range(6)%}
-                                    <div class="d-flex col justify-content-center">
-                                        <input class="form-control" style="width: 100px;text-align: center"
-                                               name="note{{loop.index}}" id="note{{loop.index}}">
-                                    </div>
-                                    {%endfor%}
+									{% for punkte_obergrenze in notenschluesselListe %}
+	                                    {% for i in range(7)%}
+		                                    {% if punkte_obergrenze.pruefung_id == pruefung.id %}
+			                                    {% if i == punkte_obergrenze.note %}
+			                                    <div class="d-flex col justify-content-center">
+			                                        <input class="form-control" style="width: 100px;text-align: center"
+			                                               name="punkteObergrenze" id="note{{loop.index}}" value={{punkte_obergrenze.punkte_obergrenze}}>
+			                                    </div>
+			                                    {% endif %}
+		                                    {% endif %}
+	                                    {% endfor %}
+                                    {% endfor%}
 
                                 </li>
                             </ul>
@@ -106,7 +123,10 @@
                                                                      <input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints1{{pruefung.id}}{{schueler.id}}" value={{bewertung.punkte}} enabled>
                                                                         <script>
                                                                                     document.getElementById('addToExam1{{pruefung.id}}{{schueler.id}}').onchange = function (){
-                                                                                    document.getElementById('achievedPoints1{{pruefung.id}}{{schueler.id}}').disabled=!this.checked;
+                                                                                    document.getElementById('achievedPoints1{{pruefung.id}}{{schueler.id}}').disabled=!this.checked; 
+                                                                                   
+                                                                                    $('#achievedPoints1{{pruefung.id}}{{schueler.id}}').val($('').val());                                                                                     
+  
                                                                             }
                                                                         </script>
                                                                     </div>
@@ -126,7 +146,7 @@
 													{% endif %}
 													{% endfor %}
 													{% endif %}
-													{% endfor %}]
+													{% endfor %}
 												{% endfor %}
 											{% endfor %}
 											{% for schueler in ns.schuelerOhneBewertung %}
@@ -160,8 +180,10 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
 
-                    <input type="submit" name="submit1" class="btn btn-primary" value="Prüfung bearbeiten" style="background-color: #006633;">
 
+                                <input type="submit" class="btn btn-primary"  name="editExam" value="Prüfung bearbeiten" style="background-color: #006633"
+                                           onclick="return confirm('Änderungen an Prüfung {{pruefung.bezeichnung}} speichern? ')">
+                                           					
                 </div>
             </form>
         </div>

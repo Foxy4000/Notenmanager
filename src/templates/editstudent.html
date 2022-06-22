@@ -70,12 +70,12 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
 
-			                                       	{% set faecherBesucht = faecherBesucht[:] %}
+			                                       	{% set ns = namespace(faecherBesucht=[]) %}
 
 			                                       	<!-- füge besuchte Fächer der Liste hinzu -->
 			                                       	{% for belegung in belegungListe %}
 			                                      		{% if schueler.id == belegung.schueler_id %}
-			                                      			{% set faecherBesucht = faecherBesucht.append(belegung.fach_id) %}
+			                                      			{% set ns.faecherBesucht = ns.faecherBesucht+ [belegung.fach_id] %}
 			                                        	{% endif %}
 			                                       	{% endfor %}
 
@@ -95,7 +95,7 @@
 			                                        {% endfor %}
 
 			                                        {% for fach in faecherListe %}
-				                                        {% if fach.id not in faecherBesucht %}
+				                                        {% if fach.id not in ns.faecherBesucht %}
 					                                        <div class="dropdown-item">
 						                                        <li>
 							                                        <input class="form-check-input me-1" name="fach_id" type="checkbox" value={{fach.id}} aria-label="..." unchecked>

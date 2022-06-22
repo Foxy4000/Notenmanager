@@ -10,6 +10,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import redirect
 from flask_csv import send_csv
 from tkinter import filedialog
+from pickle import NONE
+from sqlalchemy.sql.expression import null
 
 # from . import db
 
@@ -118,7 +120,7 @@ def profile():
         flash(vorname + " " + nachname + " wurde hinzugefügt!")
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
-
+        
         if request.form.getlist('fach_id'):
             faecher = request.form.getlist('fach_id')
             for fach_id in faecher:
@@ -367,6 +369,65 @@ def editClass(klasse_id):
         return redirect(url_for('profile'))
     else:
         return redirect(url_for('viewClass', klasse_id=klasse_id))
+    
+    
+@app.route('/profile/viewClass/editExam/<pruefung_id>', methods=['POST', 'GET'])
+@login_required
+def editExam(pruefung_id):
+   
+    pruefung = Pruefung.query.get_or_404(pruefung_id)
+    bezeichnung = request.form.get('bezeichnung')
+    notizen = request.form.get('beschreibung')
+    pruefung.notizen = notizen
+    db.session.add(pruefung)
+    db.session.commit()
+    
+    notenschluesselListe = Notenschluessel.query.filter_by(pruefung_id=pruefung_id)
+    punkteObergrenze = request.form.getlist('punkteObergrenze')   
+    i = 1
+    for punkte in punkteObergrenze:
+        for notenschluessel in notenschluesselListe:
+            if notenschluessel.note == i:
+                notenschluessel.punkte_obergrenze = punkte
+        i = i + 1
+        db.session.add(notenschluessel)
+        db.session.commit()    
+        
+    schuelerListe = request.form.getlist('examStudent')
+    punkteListe = request.form.getlist('achievedPoints')        
+    bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
+    laenge = len(schuelerListe)
+    
+    schuelerListe_ID = []
+    for schueler in schuelerListe:
+        schueler_id = int(schueler)
+        schuelerListe_ID.append(schueler_id)
+     
+    bewertungListe_ID = []
+    for bewertung in bewertungListe:
+        schueler_id = bewertung.schueler_id
+        bewertungListe_ID.append(schueler_id)   
+        
+    for schueler_id in schuelerListe_ID:
+        if schueler_id not in bewertungListe_ID:
+            bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=schueler_id, punkte=null)
+            db.session.add(bewertung)
+            db.session.commit()
+        
+    bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
+    
+    for i in range(0, laenge):
+        punkte = punkteListe[i]
+        schueler_id = int(schuelerListe[i])
+        for bewertung in bewertungListe:
+            if schueler_id == bewertung.schueler_id and punkte is not '' and punkte is not null:
+                bewertung.punkte = int(punkte)
+                db.session.add(bewertung)
+                db.session.commit()
+    
+    return redirect(url_for('profile'))    
+    
+    
 
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])
 @login_required
@@ -461,11 +522,51 @@ def deleteSubject(subject_id):
 @app.route('/profile/viewClass/<klasse_id>', methods=['GET', 'POST'])
 def viewClass(klasse_id):
     klasse = Klasse.query.get_or_404(klasse_id)
-    schuelerDerKlasse = db.session.query(Schueler).order_by(Schueler.nachname).filter(Schueler.klasse_id == klasse_id)
-    faecherDerKlasse = db.session.query(Fach).order_by(Fach.bezeichnung).filter(Schueler.klasse_id == klasse_id)
-    examenDerKlasse = db.session.query(Pruefung).order_by(Pruefung.bezeichnung).filter(Schueler.klasse_id == klasse_id)
+    
+    schuelerDerKlasse = Schueler.query.filter_by(klasse_id=klasse_id)
+    
+    belegungListe = Belegung.query.all()
+    belegungenDerKlasse = []
+    for schueler in schuelerDerKlasse:
+        for belegung in belegungListe:
+            if schueler.id == belegung.schueler_id:
+                if belegung not in belegungenDerKlasse:
+                    belegungenDerKlasse.append(belegung)
+    
+    faecherListe = Fach.query.all()
+    faecherIDDerKlasse = []
+    for belegung in belegungenDerKlasse:
+        if belegung.fach_id not in faecherIDDerKlasse:
+            faecherIDDerKlasse.append(belegung.fach_id)
+    
+    faecherDerKlasse = []
+    for faecher_ID in faecherIDDerKlasse:
+        fach = Fach.query.get_or_404(faecher_ID)
+        if fach not in faecherDerKlasse:
+            faecherDerKlasse.append(fach)
+            
+    pruefungListe = Pruefung.query.all()
+    examenDerKlasse = []
+    for pruefung in pruefungListe:
+        for faecher in faecherDerKlasse:
+            if faecher.id == pruefung.fach_id:
+                examenDerKlasse.append(pruefung)
+                
+    schuelerList = Schueler.query.all()
+    notenschluesselListe = Notenschluessel.query.all()
+    
+    bewertungsListe = Bewertung.query.all()
+    lehrerListe = Lehrer.query.all()
+    klassenListe = Klasse.query.all()
+    
+    origin = "class"
+    
     return render_template("classDashboard.html", klasse=klasse, schuelerDerKlasse=schuelerDerKlasse,
-                           faecherDerKlasse=faecherDerKlasse, examenDerKlasse=examenDerKlasse)
+                           faecherDerKlasse=faecherDerKlasse, examenDerKlasse=examenDerKlasse,
+                           schuelerList=schuelerList, belegungListe=belegungListe, pruefungListe=pruefungListe,
+                           faecherListe=faecherListe, bewertungsListe=bewertungsListe, lehrerListe=lehrerListe,
+                           notenschluesselListe=notenschluesselListe, origin=origin, klassenListe=klassenListe
+                           )
 
 
 @app.route('/profile/viewSubject/<subject_id>', methods=['GET', 'POST'])
@@ -543,7 +644,7 @@ class Pruefung(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bezeichnung = db.Column(db.String(100), unique=True)
     notizen = db.Column(db.String(100), unique=True)
-    fach_id = db.Column(db.Integer, primary_key=True)
+    fach_id = db.Column(db.Integer, nullable=True)
 
 
 app.run(debug=True)
