@@ -17,6 +17,8 @@ body::before{
       background-position: center;
       background-size: auto;
       background-attachment: fixed;
+
+
       position: absolute;
       top: 0px;
       right: 0px;
@@ -25,6 +27,7 @@ body::before{
 
      /* opacity: 0.75;*/
 
+      /*filter: blur(5px);*/
       filter: blur(5px);
 
 }
@@ -34,7 +37,8 @@ body::before{
   font-size: 70px;
 
   position: relative;
-  text-align: center
+  text-align: center;
+  display: block;
 }
 
 .text{
@@ -44,6 +48,7 @@ body::before{
      padding-left: 50px;
 
      position: relative;
+     justify-content: center;
      color: white;
      text-align: center
 

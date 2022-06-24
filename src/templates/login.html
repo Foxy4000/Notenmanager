@@ -5,54 +5,58 @@
 
 {% block content %}
 
-	{% for message in get_flashed_messages() %}
+{% for message in get_flashed_messages() %}
 
-		<div class="alert alert-warning alert-dismissible fade show" role="alert">
-	 		{{ message }}
-	  		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-		</div>
-
-
-	{% endfor %}
-
-<div class="column is-4 is-offset-4">
-    <h3 class="title">Login</h3>
-    <div class="box">
-        <form method="POST" action="login">
-            </br>
-            <label for="email">E-Mail:</label>
-            <input class="form-control" name="email" id="email" placeholder="Ihre E-Mail">
-
-            <label for="password">Passwort:</label>
-            <input class="form-control" type="password" name="password" id="password" placeholder="Ihr Passwort">
-            </br>
-
-            <!--<button class="btn btn-success" type="submit">Login</button>-->
-            <input type="submit" name="submit" class="btn btn-primary" value="Login" style="background-color: #006633;">
-        </form>
-        <!--<form method="POST" action="/login">
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
-                </div>
-            </div>
-            <div class="field">
-                <label class="checkbox">
-                    <input type="checkbox">
-                    Remember me
-                </label>
-            </div>
-            <button class="button is-block is-info is-large is-fullwidth">Login</button>
-        </form>-->
-    </div>
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
+
+{% endfor %}
+<body style="background-image: url('/static/classroom.jpg'); background-position: center; background-size: auto;background-attachment: fixed;">
+<div class="card" style="padding: 10px;">
+    <h5 class="card-header">Login</h5>
+    <div class="column is-4 is-offset-4">
+
+        <div class="box">
+            <form method="POST" action="login">
+                </br>
+                <label for="email">E-Mail:</label>
+                <input class="form-control" name="email" id="email" placeholder="Ihre E-Mail">
+
+                <label for="password">Passwort:</label>
+                <input class="form-control" type="password" name="password" id="password" placeholder="Ihr Passwort">
+                </br>
+
+                <!--<button class="btn btn-success" type="submit">Login</button>-->
+                <input type="submit" name="submit" class="btn btn-primary" value="Login"
+                       style="background-color: #006633;">
+            </form>
+            <!--<form method="POST" action="/login">
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="password" name="password" placeholder="Your Password">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+                </div>
+                <button class="button is-block is-info is-large is-fullwidth">Login</button>
+            </form>-->
+        </div>
+    </div>
+</div>
+</body>
 {% endblock %}
 
 
