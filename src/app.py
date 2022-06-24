@@ -120,7 +120,7 @@ def profile():
         flash(vorname + " " + nachname + " wurde hinzugefügt!")
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
-        
+
         if request.form.getlist('fach_id'):
             faecher = request.form.getlist('fach_id')
             for fach_id in faecher:
@@ -370,21 +370,20 @@ def editClass(klasse_id):
         return redirect(url_for('profile'))
     else:
         return redirect(url_for('viewClass', klasse_id=klasse_id))
-    
-    
+
+
 @app.route('/profile/viewClass/editExam/<pruefung_id>', methods=['POST', 'GET'])
 @login_required
 def editExam(pruefung_id):
-   
     pruefung = Pruefung.query.get_or_404(pruefung_id)
     bezeichnung = request.form.get('bezeichnung')
     notizen = request.form.get('beschreibung')
     pruefung.notizen = notizen
     db.session.add(pruefung)
     db.session.commit()
-    
+
     notenschluesselListe = Notenschluessel.query.filter_by(pruefung_id=pruefung_id)
-    punkteObergrenze = request.form.getlist('punkteObergrenze')   
+    punkteObergrenze = request.form.getlist('punkteObergrenze')
     i = 1
     for punkte in punkteObergrenze:
         for notenschluessel in notenschluesselListe:
@@ -392,31 +391,31 @@ def editExam(pruefung_id):
                 notenschluessel.punkte_obergrenze = punkte
         i = i + 1
         db.session.add(notenschluessel)
-        db.session.commit()    
-        
+        db.session.commit()
+
     schuelerListe = request.form.getlist('examStudent')
-    punkteListe = request.form.getlist('achievedPoints')        
+    punkteListe = request.form.getlist('achievedPoints')
     bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
     laenge = len(schuelerListe)
-    
+
     schuelerListe_ID = []
     for schueler in schuelerListe:
         schueler_id = int(schueler)
         schuelerListe_ID.append(schueler_id)
-     
+
     bewertungListe_ID = []
     for bewertung in bewertungListe:
         schueler_id = bewertung.schueler_id
-        bewertungListe_ID.append(schueler_id)   
-        
+        bewertungListe_ID.append(schueler_id)
+
     for schueler_id in schuelerListe_ID:
         if schueler_id not in bewertungListe_ID:
             bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=schueler_id, punkte=null)
             db.session.add(bewertung)
             db.session.commit()
-        
+
     bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
-    
+
     for i in range(0, laenge):
         punkte = punkteListe[i]
         schueler_id = int(schuelerListe[i])
@@ -425,10 +424,8 @@ def editExam(pruefung_id):
                 bewertung.punkte = int(punkte)
                 db.session.add(bewertung)
                 db.session.commit()
-    
-    return redirect(url_for('profile'))    
-    
-    
+
+    return redirect(url_for('profile'))
 
 
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])
@@ -524,9 +521,9 @@ def deleteSubject(subject_id):
 @app.route('/profile/viewClass/<klasse_id>', methods=['GET', 'POST'])
 def viewClass(klasse_id):
     klasse = Klasse.query.get_or_404(klasse_id)
-    
+
     schuelerDerKlasse = Schueler.query.filter_by(klasse_id=klasse_id)
-    
+
     belegungListe = Belegung.query.all()
     belegungenDerKlasse = []
     for schueler in schuelerDerKlasse:
@@ -534,35 +531,35 @@ def viewClass(klasse_id):
             if schueler.id == belegung.schueler_id:
                 if belegung not in belegungenDerKlasse:
                     belegungenDerKlasse.append(belegung)
-    
+
     faecherListe = Fach.query.all()
     faecherIDDerKlasse = []
     for belegung in belegungenDerKlasse:
         if belegung.fach_id not in faecherIDDerKlasse:
             faecherIDDerKlasse.append(belegung.fach_id)
-    
+
     faecherDerKlasse = []
     for faecher_ID in faecherIDDerKlasse:
         fach = Fach.query.get_or_404(faecher_ID)
         if fach not in faecherDerKlasse:
             faecherDerKlasse.append(fach)
-            
+
     pruefungListe = Pruefung.query.all()
     examenDerKlasse = []
     for pruefung in pruefungListe:
         for faecher in faecherDerKlasse:
             if faecher.id == pruefung.fach_id:
                 examenDerKlasse.append(pruefung)
-                
+
     schuelerList = Schueler.query.all()
     notenschluesselListe = Notenschluessel.query.all()
-    
+
     bewertungsListe = Bewertung.query.all()
     lehrerListe = Lehrer.query.all()
     klassenListe = Klasse.query.all()
-    
+
     origin = "class"
-    
+
     return render_template("classDashboard.html", klasse=klasse, schuelerDerKlasse=schuelerDerKlasse,
                            faecherDerKlasse=faecherDerKlasse, examenDerKlasse=examenDerKlasse,
                            schuelerList=schuelerList, belegungListe=belegungListe, pruefungListe=pruefungListe,
@@ -588,7 +585,7 @@ def viewSubject(subject_id):
 @app.route('/profile/viewExam/<pruefung_id>', methods=['GET', 'POST'])
 def viewExam(pruefung_id):
     pruefung = db.session.query(Pruefung).filter(Pruefung.id == pruefung_id).first()
-    pruefungliste=Pruefung.query.all()
+    pruefungliste = Pruefung.query.all()
     schuelerDerPruefung = db.session.query(Pruefung, Schueler, Belegung).filter(
         Pruefung.fach_id == Belegung.fach_id).filter(Belegung.schueler_id == Schueler.id).filter(
         Pruefung.id == pruefung_id).all()
@@ -619,9 +616,10 @@ def viewExam(pruefung_id):
         if element != 0:
             average += (index + 1) * element
             total += element
-    average = average / total
+    average = round((average / total), 3)
 
-    return render_template("examDashboard.html", pruefung=pruefung,pruefungliste=pruefungliste, schuelerDerPruefung=schuelerDerPruefung,
+    return render_template("examDashboard.html", pruefung=pruefung, pruefungliste=pruefungliste,
+                           schuelerDerPruefung=schuelerDerPruefung,
                            bewertungDerPruefung=bewertungDerPruefung, notenschluesselListe=notenschluesselListe,
                            labels=labels, data=data, average=average)
 
