@@ -571,15 +571,41 @@ def viewClass(klasse_id):
 @app.route('/profile/viewSubject/<subject_id>', methods=['GET', 'POST'])
 def viewSubject(subject_id):
     fach = Fach.query.get_or_404(subject_id)
-    schuelerDesFaches = db.session.query(Schueler).order_by(Schueler.nachname).filter(
-        Belegung.schueler_id == subject_id)
-    klassenDesFaches = db.session.query(Klasse).order_by(Klasse.bezeichnung).filter(Schueler.id == subject_id)
-    examenDesFaches = db.session.query(Pruefung).order_by(Pruefung.bezeichnung).filter(
-        Schueler.id == Belegung.schueler_id).filter(
-        Belegung.fach_id == Pruefung.fach_id).all()
+
+    belegungListe = Belegung.query.all()
+    schuelerList = Schueler.query.all()
+    klassenListe = Klasse.query.all()
+    pruefungenDesFaches = db.session.query(Pruefung).filter(Pruefung.fach_id == subject_id)
+
+    schuelerDesFaches = []
+    klassenDesFaches = []
+    for belegung in belegungListe:
+        if belegung.fach_id == subject_id:
+            for schueler in schuelerList:
+                if belegung.schueler_id == schueler.id:
+                    schuelerDesFaches.append(schueler)
+
+    for schueler in schuelerDesFaches:
+        for klasse in klassenListe:
+            if schueler.klasse_id == klasse.id:
+                if klasse not in klassenDesFaches:
+                    klassenDesFaches.append(klasse)
+
+    notenschluesselListe = Notenschluessel.query.all()
+    bewertungsListe = Bewertung.query.all()
+    lehrerListe = Lehrer.query.all()
+    faecherListe = Fach.query.all()
+    pruefungListe = Pruefung.query.all()
+
+    origin = "class"
 
     return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches,
-                           klassenDesFaches=klassenDesFaches, examenDesFaches=examenDesFaches)
+                           klassenDesFaches=klassenDesFaches, pruefungenDesFaches=pruefungenDesFaches,
+                           schuelerList=schuelerList, belegungListe=belegungListe, pruefungListe=pruefungListe,
+                           faecherListe=faecherListe, bewertungsListe=bewertungsListe, lehrerListe=lehrerListe,
+                           notenschluesselListe=notenschluesselListe, origin=origin, klassenListe=klassenListe
+                           )
+
 
 
 @app.route('/profile/viewExam/<pruefung_id>', methods=['GET', 'POST'])
