@@ -12,6 +12,7 @@ from flask_csv import send_csv
 from tkinter import filedialog
 from pickle import NONE
 from sqlalchemy.sql.expression import null
+from collections.abc import Iterator
 
 # from . import db
 
@@ -253,6 +254,76 @@ def exportStudentList(class_id):
             for schueler in schuelerListe:
                 csvwriter.writerow([schueler.vorname, schueler.nachname])
             flash("Schülerliste wurden exportiert")
+    return redirect(url_for('profile'))
+
+
+class hn_wrapper(Iterator):
+  def __init__(self, it):
+    self.it = iter(it)
+    self._hasnext = None
+    
+  def __iter__(self): 
+    return self
+  
+  def __next__(self):
+    if self._hasnext:
+      result = self._thenext
+    else:
+      result = next(self.it)
+    self._hasnext = None
+    return result
+  
+  def hasnext(self):
+    if self._hasnext is None:
+      try: 
+        self._thenext = next(self.it)
+      except StopIteration: 
+        self._hasnext = False
+      else: self._hasnext = True
+    return self._hasnext
+
+
+@app.route("/profile/exportGradelist/<pruefung_id>", methods=['GET', 'POST'])
+@login_required
+def exportGradelist(pruefung_id):
+    pruefung = Pruefung.query.get_or_404(pruefung_id)
+    fach = Fach.query.get_or_404(pruefung.fach_id)
+    bewertungen = Bewertung.query.filter_by(pruefung_id=pruefung_id)
+    notenschluessel = Notenschluessel.query.filter_by(pruefung_id=pruefung_id)
+
+    filename = tk.filedialog.asksaveasfilename(
+        title='Speichern als...',
+        filetypes=filetypes,
+        defaultextension='.csv'
+    )
+
+    if filename != '':
+        with open(filename, 'w', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=';')
+
+            
+            csvwriter.writerow(["Fach:", fach.bezeichnung])
+            csvwriter.writerow(["Prüfung:", pruefung.bezeichnung])
+            csvwriter.writerow([])
+            csvwriter.writerow(["Vorname", "Nachname", "Punkte", "Note"])
+
+            for bewertung in bewertungen:
+                schueler = Schueler.query.get_or_404(bewertung.schueler_id)
+                
+                note=""
+                notenschluesselIt = hn_wrapper(notenschluessel)
+                for ns in notenschluesselIt:
+                    if bewertung.punkte <= ns.punkte_obergrenze:
+                        if notenschluesselIt.hasnext():
+                            nsNext = next(notenschluesselIt)
+                            if bewertung.punkte > nsNext.punkte_obergrenze:
+                                note = ns.note
+                            else:
+                                note = nsNext.note
+                        
+                
+                csvwriter.writerow([schueler.vorname, schueler.nachname, bewertung.punkte, note])
+            flash("Notenliste wurden exportiert")
     return redirect(url_for('profile'))
 
 

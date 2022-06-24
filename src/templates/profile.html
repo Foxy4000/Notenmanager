@@ -244,21 +244,16 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Schüler</h5>
                 
-				<form method="POST">
-				<div class="form-group">				
+				
+				<div class="form-group" method="POST">				
 					<select class="selectpicker" data-live-search="true" name="searched" id="searched" title ="Schüler auswählen">																							
 					<option></option>
 					{% for schueler in schuelerList %}
 						<option value={{schueler.id}} >{{schueler.vorname}} {{schueler.nachname}} </option>
 					{% endfor %}
 					</select>
-				<button type="button" class="btn btn-success" style="background-color: #006633; color: white" ><a href="{{url_for('searchStudent')}}" style="background-color: #006633; color: white" >Go</a></button>
 				</div>                
-              	</form>
-                
-                
-                
-                
+
                 <h5>{{schuelerList|count}}</h5>
                 
             </div>
