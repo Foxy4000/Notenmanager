@@ -164,7 +164,7 @@
             </div>
 
         <script>
-            var ctx=document.getElementById("bar-chart").getContext("2d");
+            var ctx=document.getElementById("bar-chart");
             var barChart = new Chart(ctx,{
                 type:"bar",
                 data:{
@@ -185,7 +185,8 @@
                                 labelString: 'Anzahl Schüler'
                                 },
                              ticks: {
-                                stepSize: 1
+                                stepSize: 1,
+                                 beginAtZero: true
                                 },
                             }],
                          xAxes: [{
@@ -199,8 +200,8 @@
                     title: {
                     display: true,
                     text:'Ø: '+  {{average}}
-                  }
-                }
+                  },
+                },
                 });
         </script>
 

@@ -703,11 +703,12 @@ def viewExam(pruefung_id):
             if index == 5:
                 data[index] += 1
                 break
-            elif index < len(notenliste):
 
-                if noten.punkte_obergrenze >= punkte > notenliste[index + 1].punkte_obergrenze:
-                    data[index] += 1
-                    break
+            if noten.punkte_obergrenze >= punkte > notenliste[index + 1].punkte_obergrenze:
+                data[index] += 1
+                break
+    for i in data:
+        print(i)
     average = 0
     total = 0
     for index, element in enumerate(data):
