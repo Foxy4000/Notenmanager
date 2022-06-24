@@ -189,7 +189,7 @@ def profile():
         for schuelerId in bewertungListe:
             id = schuelerId
             note = notenliste[bewertungListe.index(schuelerId)]
-            
+
             if note is not '':
                 note = int(note)
                 bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=note)
@@ -204,7 +204,7 @@ def profile():
             i = i + 1
             db.session.add(notenschluessel)
             db.session.commit()
-            
+
     belegungListe = Belegung.query.all()
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
@@ -262,7 +262,8 @@ def searchStudent():
     student_id = request.form.get('searched')
     if student_id is not None:
         return redirect(url_for('viewStudent', student_id=student_id))
-    else: flash("Funktioniert noch nicht")
+    else:
+        flash("Funktioniert noch nicht")
     return redirect(url_for('profile'))
 
 
@@ -429,6 +430,7 @@ def editExam(pruefung_id):
     
     
 
+
 @app.route('/profile/deleteStudent/<student_id>', methods=['POST'])
 @login_required
 def deleteStudent(student_id):
@@ -462,7 +464,6 @@ def deleteClass(klasse_id):
 @app.route('/profile/deletePruefung/<pruefung_id>', methods=['POST', 'GET'])
 @login_required
 def deletePruefung(pruefung_id):
-
     bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
     for bewertung in bewertungListe:
         db.session.delete(bewertung)
@@ -508,6 +509,7 @@ def editSubject(fach_id):
         return redirect(url_for('profile'))
     else:
         return redirect(url_for('viewSubject', subject_id=fach_id))
+
 
 @app.route('/profile/deleteSubject/<subject_id>', methods=['POST'])
 @login_required
@@ -572,14 +574,56 @@ def viewClass(klasse_id):
 @app.route('/profile/viewSubject/<subject_id>', methods=['GET', 'POST'])
 def viewSubject(subject_id):
     fach = Fach.query.get_or_404(subject_id)
-    schuelerDesFaches = db.session.query(Schueler).order_by(Schueler.nachname).filter(Belegung.schueler_id == subject_id)
+    schuelerDesFaches = db.session.query(Schueler).order_by(Schueler.nachname).filter(
+        Belegung.schueler_id == subject_id)
     klassenDesFaches = db.session.query(Klasse).order_by(Klasse.bezeichnung).filter(Schueler.id == subject_id)
     examenDesFaches = db.session.query(Pruefung).order_by(Pruefung.bezeichnung).filter(
-                                       Schueler.id == Belegung.schueler_id).filter(
-                                       Belegung.fach_id == Pruefung.fach_id).all()
+        Schueler.id == Belegung.schueler_id).filter(
+        Belegung.fach_id == Pruefung.fach_id).all()
 
     return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches,
                            klassenDesFaches=klassenDesFaches, examenDesFaches=examenDesFaches)
+
+
+@app.route('/profile/viewExam/<pruefung_id>', methods=['GET', 'POST'])
+def viewExam(pruefung_id):
+    pruefung = db.session.query(Pruefung).filter(Pruefung.id == pruefung_id).first()
+    pruefungliste=Pruefung.query.all()
+    schuelerDerPruefung = db.session.query(Pruefung, Schueler, Belegung).filter(
+        Pruefung.fach_id == Belegung.fach_id).filter(Belegung.schueler_id == Schueler.id).filter(
+        Pruefung.id == pruefung_id).all()
+    bewertungDerPruefung = db.session.query(Pruefung, Bewertung).filter(Pruefung.id == Bewertung.pruefung_id).filter(
+        Pruefung.id == pruefung_id).all()
+    notenschluesselListe = db.session.query(Notenschluessel).filter(Notenschluessel.pruefung_id == pruefung_id)
+    notenliste = list(notenschluesselListe)
+
+    labels = [1, 2, 3, 4, 5, 6]
+    data = [0, 0, 0, 0, 0, 0]
+
+    for bewertungen in bewertungDerPruefung:
+
+        punkte = bewertungen.Bewertung.punkte
+        for index, noten in enumerate(notenliste):
+
+            if index == 5:
+                data[index] += 1
+                break
+            elif index < len(notenliste):
+
+                if noten.punkte_obergrenze >= punkte > notenliste[index + 1].punkte_obergrenze:
+                    data[index] += 1
+                    break
+    average = 0
+    total = 0
+    for index, element in enumerate(data):
+        if element != 0:
+            average += (index + 1) * element
+            total += element
+    average = average / total
+
+    return render_template("examDashboard.html", pruefung=pruefung,pruefungliste=pruefungliste, schuelerDerPruefung=schuelerDerPruefung,
+                           bewertungDerPruefung=bewertungDerPruefung, notenschluesselListe=notenschluesselListe,
+                           labels=labels, data=data, average=average)
 
 
 class Lehrer(db.Model, UserMixin):

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+<body>
+
+
+
+    <div class="row justify-content-between mb-3 mt-1" >
+         <div class="col-md-8">
+
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5>Notenschlüssel</h5>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <ul class="card-body" style="overflow-y: auto; max-height: 300px; padding-bottom: 17px">
+                            <li class="d-flex justify-content-between">
+                                <div class="col">
+                                    <b>Note:</b>
+                                </div>
+                                {%for i in range(6)%}
+                                <div class="col"style="text-align: center">
+                                    <b>{{loop.index}}</b>
+                                </div>
+                                {%endfor%}
+                            </li>
+                            <hr style="height: 2px; background-color: black">
+                             <li class="d-flex justify-content-between">
+                                 <div class="col">
+                                     <b>Punkte Obergrenze:</b>
+                                 </div>
+
+                                 {%for note in notenschluesselListe%}
+
+                                 <div class="d-flex col justify-content-center">
+                                    {{note.punkte_obergrenze}}
+                                 </div>
+
+                                 {%endfor%}
+
+                             </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+    <div class="col-4">
+
+                <div class="card" style="mb-1">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <div class="mt-3">
+                                <h4>Prüfung</h4>
+                                <h4>{{pruefung.bezeichnung}}</h4>
+
+                                <ul style="list-style: none; padding-left: 0px">
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                style="background-color: #006633; color: white" id="editExam{{pruefung.id}}"
+                                                data-target="#editExam{{pruefung.id}}">
+                                            Prüfung bearbeiten
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                style="background-color: #006633; color: white">
+                                            Some Action
+                                        </button>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+    </div>
+</div>
+        </div>
+
+
+            <div class="row justify-content-between">
+                <ul class="col-md-6 ">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Schüler</h5>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="d-flex justify-content-between" style="padding: 5px 15px">
+                <div style="width: 200px">
+                    Name
+                </div>
+                <div>
+                    Punkte
+                </div>
+                <div>
+                    Note
+                </div>
+            </div>
+            <hr style="height: 2px; background-color: black;margin: 2px">
+        <ul class="card-body "style=" overflow-y: auto; list-style: none; padding: 5px 5px; max-height: 30vh;">
+
+                 <div>
+                {%for schueler in schuelerDerPruefung%}
+                     {%for bewertung in bewertungDerPruefung%}
+                        {%if bewertung.Bewertung.schueler_id == schueler.Schueler.id%}
+                            <li class="d-flex justify-content-between align-items-center" style="padding: 0px 10px">
+                                <div style="width: 200px">{{schueler.Schueler.vorname}} {{schueler.Schueler.nachname}}</div>
+                                <div>
+                                    <h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
+                                    </div>
+                                <div>
+                                        {%for notenschluessel in notenschluesselListe%}
+                                                {% if bewertung.Bewertung.punkte <= notenschluessel.punkte_obergrenze %}
+                                                    {% if loop.nextitem is defined %}
+                                                        {% if bewertung.Bewertung.punkte > loop.nextitem.punkte_obergrenze %}
+                                                        <b>{{notenschluessel.note}}</b>
+                                                        {% endif %}
+                                                        {% else %}
+                                                        <b>{{notenschluessel.note}}</b>
+                                                        {% endif %}
+                                                    {%endif%}
+                                        {%endfor%}
+                                </div>
+                            </li>
+                            <hr>
+                        {%endif%}
+                     {%endfor%}
+                {%endfor%}
+                 </div>
+            </ul>
+
+
+    </div>
+
+    </ul>
+
+
+                <div class="col-md-6">
+
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5>Notenverteilung</h5>
+                        </div>
+                    </div>
+
+                    <div class="card-body " style="height: 30vh">
+                        <div>
+                          <canvas id="bar-chart" width="800" height="400"></canvas>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        <script>
+            var ctx=document.getElementById("bar-chart").getContext("2d");
+            var barChart = new Chart(ctx,{
+                type:"bar",
+                data:{
+                    labels:{{labels|safe}},
+                    datasets:[{
+                        label:"Schüler",
+                        data:{{data|safe}},
+                        backgroundColor: ['#009933', '#66ff33','#ffff33','#ffcc33','#ff9933','#ff3333'],
+                            //"#006699"
+                            //['#009933', '#66ff33','#ffff33','#ffcc33','#ff9933','#ff3333']
+                    }]
+                },
+                options: {
+                     scales: {
+                         yAxes: [{
+                             scaleLabel: {
+                                display: true,
+                                labelString: 'Anzahl Schüler'
+                                },
+                             ticks: {
+                                stepSize: 1
+                                },
+                            }],
+                         xAxes: [{
+                             scaleLabel: {
+                                 display: true,
+                                 labelString: 'Notenausprägung'
+                                }
+                            }]
+                    },
+                    legend: { display: false },
+                    title: {
+                    display: true,
+                    text:'Ø: '+  {{average}}
+                  }
+                }
+                });
+        </script>
+
+</body>
+ {% endblock %}
+</html>
