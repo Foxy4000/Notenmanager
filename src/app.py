@@ -346,6 +346,7 @@ def viewStudent(student_id):
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
     notenschluesselListe = Notenschluessel.query.all()
+    belegungListe = Belegung.query.filter_by(schueler_id=schueler.id)
     faecherBesucht = []
     faecherNichtBesucht = []
     pruefungen = db.session.query(Schueler, Belegung, Pruefung
@@ -371,7 +372,7 @@ def viewStudent(student_id):
     return render_template("studentdashboard.html", schueler=schueler, faecher=faecher, schuelerList=schuelerListe,
                            faecherListe=faecherListe, klassenListe=klassenListe, faecherBesucht=faecherBesucht,
                            faecherNichtBesucht=faecherNichtBesucht, pruefungen=pruefungen, bewertungen=bewertung,
-                           origin=origin, notenschluesselListe=notenschluesselListe)
+                           origin=origin, notenschluesselListe=notenschluesselListe, belegungListe=belegungListe)
 
 
 @app.route('/profile/editStudent/<student_id>', methods=['POST', 'GET'])
