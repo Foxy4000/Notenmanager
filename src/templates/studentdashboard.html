@@ -26,8 +26,6 @@
                                        <a href="{{url_for('viewSubject', subject_id = fach.Fach.id)}}" style="text-decoration: none; color: black">
                                           <h6 class="mb-0" style="width: 200px">{{fach.Fach.bezeichnung}}</h6></a>
 
-                                           <h6 class="mb-0">{{pruefungen|selectattr("Pruefung.fach_id", "equalto","{{fach.Fach.id}}")|list|length}}</h6>
-
 
                                                <a style="color: black" data-toggle="collapse" href="#collapseSubject{{fach.Fach.id}}" aria-expanded="false" aria-controls="collapseSubject">
                                                   <i onclick="toggle(this)" class="bi bi-chevron-down" style="font-size: 25px"></i>
@@ -57,10 +55,12 @@
 
                                                             <tr class="list-group-item-action" >
 
+
+
                                                                             <td>
                                                                                 <a href="{{url_for('viewExam', pruefung_id=pruefung.Pruefung.id)}}" style="text-decoration: none; color: black">
                                                                                 <h7 style="width: 300px">{{pruefung.Pruefung.bezeichnung}}</h7>
-                                                                                </a>
+
                                                                             </td>
                                                                             <td>
                                                                             {% if bewertung.Bewertung.punkte is not none %}

@@ -694,6 +694,10 @@ def viewExam(pruefung_id):
         Pruefung.id == pruefung_id).all()
     notenschluesselListe = db.session.query(Notenschluessel).filter(Notenschluessel.pruefung_id == pruefung_id)
     notenliste = list(notenschluesselListe)
+    schuelerList = Schueler.query.all()
+    belegungListe = Belegung.query.all()
+    faecherListe = Fach.query.all()
+    bewertungsListe = Bewertung.query.all()
 
     labels = [1, 2, 3, 4, 5, 6]
     data = [0, 0, 0, 0, 0, 0]
@@ -717,11 +721,11 @@ def viewExam(pruefung_id):
         if element != 0:
             average += (index + 1) * element
             total += element
-    average = round((average / total), 3)
+    average = round((average / total), 1)
 
-    return render_template("examDashboard.html", pruefung=pruefung, pruefungliste=pruefungliste,
-                           schuelerDerPruefung=schuelerDerPruefung,
-                           bewertungDerPruefung=bewertungDerPruefung, notenschluesselListe=notenschluesselListe,
+    return render_template("examDashboard.html", pruefung=pruefung, pruefungListe=pruefungliste, schuelerList=schuelerList,
+                           faecherListe=faecherListe,bewertungsListe=bewertungsListe, schuelerDerPruefung=schuelerDerPruefung,
+                           belegungListe=belegungListe, bewertungDerPruefung=bewertungDerPruefung, notenschluesselListe=notenschluesselListe,
                            labels=labels, data=data, average=average)
 
 

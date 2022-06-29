@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+{% include 'editExam.html' %}
 {% extends 'base.html' %}
+
 {% block content %}
 
 <head>
@@ -64,12 +66,10 @@
                                 <h6>Notizen: {{pruefung.notizen}}</h6>
 
                                 <ul style="list-style: none; padding-left: 0px">
-                                    <li class="mb-1">
-                                        <button type="button" class="btn btn-primary btn-sm"
-                                                style="background-color: #006633; color: white" id="editExam{{pruefung.id}}"
-                                                data-target="#editExam{{pruefung.id}}">
-                                            Prüfung bearbeiten
-                                        </button>
+
+                                     <li class="mb-1">
+                                        <a class="btn btn-primary btn-sm" style="background-color: #006633; color: white"
+                                           data-toggle="modal" id="editExam{{pruefung.id}}" data-target="#editExam{{pruefung.id}}" data-originOfAction="profile">Prüfung bearbeiten</a>
                                     </li>
                                     <li class="mb-1">
                                         <button type="button" class="btn btn-primary btn-sm"
@@ -108,13 +108,13 @@
                 </div>
             </div>
             <hr style="height: 2px; background-color: black;margin: 2px">
-        <ul class="card-body "style=" overflow-y: auto; list-style: none; padding: 5px 5px; max-height: 30vh;">
+        <ul class="card-body "style=" overflow-y: auto; list-style: none; padding: 0px 5px; max-height: 30vh;">
 
                  <div>
                 {%for schueler in schuelerDerPruefung%}
                      {%for bewertung in bewertungDerPruefung%}
                         {%if bewertung.Bewertung.schueler_id == schueler.Schueler.id%}
-                            <li class="d-flex justify-content-between align-items-center" style="padding: 0px 10px">
+                            <li class="d-flex justify-content-between align-items-center list-group-item-action" style="padding: 15px 10px">
                                 <div style="width: 200px">
                                 <a href="{{url_for('viewStudent', student_id=schueler.Schueler.id)}}" style="text-decoration: none; color: black">
                                 {{schueler.Schueler.vorname}} {{schueler.Schueler.nachname}}</a></div>
@@ -135,7 +135,7 @@
                                         {%endfor%}
                                 </div>
                             </li>
-                            <hr>
+                            <hr style="margin: 0px">
                         {%endif%}
                      {%endfor%}
                 {%endfor%}
