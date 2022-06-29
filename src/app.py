@@ -192,7 +192,7 @@ def profile():
             note = notenliste[bewertungListe.index(schuelerId)]
 
             if note is not '':
-                note = int(note)
+                note = float(note)
                 bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=note)
             else:
                 bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=None)
@@ -472,7 +472,7 @@ def editExam(pruefung_id):
 
     schuelerListe_ID = []
     for schueler in schuelerListe:
-        schueler_id = int(schueler)
+        schueler_id = float(schueler)
         schuelerListe_ID.append(schueler_id)
 
     bewertungListe_ID = []
@@ -490,10 +490,10 @@ def editExam(pruefung_id):
 
     for i in range(0, laenge):
         punkte = punkteListe[i]
-        schueler_id = int(schuelerListe[i])
+        schueler_id = float(schuelerListe[i])
         for bewertung in bewertungListe:
             if schueler_id == bewertung.schueler_id and punkte is not '' and punkte is not null:
-                bewertung.punkte = int(punkte)
+                bewertung.punkte = float(punkte)
                 db.session.add(bewertung)
                 db.session.commit()
 
@@ -590,7 +590,7 @@ def deleteSubject(subject_id):
     return redirect(url_for('profile'))
 
 
-@app.route('/profile/viewClass/<klasse_id>', methods=['GET', 'POST'])
+@app.route('/profile/viewClass/<int:klasse_id>', methods=['GET', 'POST'])
 def viewClass(klasse_id):
     klasse = Klasse.query.get_or_404(klasse_id)
 
@@ -650,15 +650,16 @@ def viewSubject(subject_id):
 
     pruefungenDesFaches = []
     for pruefung in pruefungListe:
-        if pruefung.fach_id == subject_id:
+        if pruefung.fach_id == fach.id:
             pruefungenDesFaches.append(pruefung)
 
     schuelerDesFaches = []
     for belegung in belegungListe:
-        if belegung.fach_id == subject_id:
+        if belegung.fach_id == fach.id:
             for schueler in schuelerList:
-                if belegung.schueler_id == schueler.id:
+                if schueler.id == belegung.schueler_id:
                     schuelerDesFaches.append(schueler)
+                    
     klassenDesFaches = []
     for schueler in schuelerDesFaches:
         for klasse in klassenListe:
@@ -670,7 +671,7 @@ def viewSubject(subject_id):
     bewertungsListe = Bewertung.query.all()
     lehrerListe = Lehrer.query.all()
     faecherListe = Fach.query.all()
-    pruefungListe = Pruefung.query.all()
+
 
     origin = "subject"
 
@@ -709,8 +710,7 @@ def viewExam(pruefung_id):
             if noten.punkte_obergrenze >= punkte > notenliste[index + 1].punkte_obergrenze:
                 data[index] += 1
                 break
-    for i in data:
-        print(i)
+
     average = 0
     total = 0
     for index, element in enumerate(data):

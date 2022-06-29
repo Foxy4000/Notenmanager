@@ -23,7 +23,8 @@
                                       {% for fach in faecher%}
 
                                        <li class="d-flex justify-content-between align-items-center">
-                                          <h6 class="mb-0" style="width: 200px">{{fach.Fach.bezeichnung}}</h6>
+                                       <a href="{{url_for('viewSubject', subject_id = fach.Fach.id)}}" style="text-decoration: none; color: black">
+                                          <h6 class="mb-0" style="width: 200px">{{fach.Fach.bezeichnung}}</h6></a>
 
                                            <h6 class="mb-0">{{pruefungen|selectattr("Pruefung.fach_id", "equalto","{{fach.Fach.id}}")|list|length}}</h6>
 
