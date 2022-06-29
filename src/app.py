@@ -643,20 +643,23 @@ def viewClass(klasse_id):
 @app.route('/profile/viewSubject/<subject_id>', methods=['GET', 'POST'])
 def viewSubject(subject_id):
     fach = Fach.query.get_or_404(subject_id)
-
+    pruefungListe = Pruefung.query.all()
     belegungListe = Belegung.query.all()
     schuelerList = Schueler.query.all()
     klassenListe = Klasse.query.all()
-    pruefungenDesFaches = db.session.query(Pruefung).filter(Pruefung.fach_id == subject_id)
+
+    pruefungenDesFaches = []
+    for pruefung in pruefungListe:
+        if pruefung.fach_id == subject_id:
+            pruefungenDesFaches.append(pruefung)
 
     schuelerDesFaches = []
-    klassenDesFaches = []
     for belegung in belegungListe:
         if belegung.fach_id == subject_id:
             for schueler in schuelerList:
                 if belegung.schueler_id == schueler.id:
                     schuelerDesFaches.append(schueler)
-
+    klassenDesFaches = []
     for schueler in schuelerDesFaches:
         for klasse in klassenListe:
             if schueler.klasse_id == klasse.id:
@@ -669,14 +672,13 @@ def viewSubject(subject_id):
     faecherListe = Fach.query.all()
     pruefungListe = Pruefung.query.all()
 
-    origin = "class"
+    origin = "subject"
 
     return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches,
                            klassenDesFaches=klassenDesFaches, pruefungenDesFaches=pruefungenDesFaches,
                            schuelerList=schuelerList, belegungListe=belegungListe, pruefungListe=pruefungListe,
                            faecherListe=faecherListe, bewertungsListe=bewertungsListe, lehrerListe=lehrerListe,
-                           notenschluesselListe=notenschluesselListe, origin=origin, klassenListe=klassenListe
-                           )
+                           notenschluesselListe=notenschluesselListe, origin=origin, klassenListe=klassenListe)
 
 
 
