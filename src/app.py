@@ -103,7 +103,7 @@ def register():
             flash("Teacher successfully registrated!")
         else:
             flash("Teacher already registrated")
-    return render_template("profile.html")
+    return redirect(url_for('profile'))
 
 
 @app.route('/profile/editUserData', methods=['POST', 'GET'])
