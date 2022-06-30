@@ -100,15 +100,53 @@ def register():
                             ist_administrator=isadmin)
             db.session.add(lehrer)
             db.session.commit()
-            flash("Teacher succesfully registrated!")
+            flash("Teacher successfully registrated!")
         else:
             flash("Teacher already registrated")
     return render_template("profile.html")
 
 
+@app.route('/profile/editUserData', methods=['POST', 'GET'])
+@login_required
+def editUserData():
+    lehrer = Lehrer.query.get_or_404(current_user.id)
+    if request.method == 'POST':
+        lehrer.vorname = request.form.get('vorname')
+        lehrer.nachname = request.form.get('nachname')
+        lehrer.email = request.form.get('email')
+        passwort = request.form.get('passwort')
+        # Hash the password
+        lehrer.passwort = generate_password_hash(passwort, "sha256")
+        if lehrer.ist_administrator:
+            lehrer.ist_administrator = True
+        else:
+            lehrer.ist_administrator = False
+        db.session.add(lehrer)
+        db.session.commit()
+        flash("Profile successfully edited.")
+
+    belegungListe = Belegung.query.all()
+    klassenListe = Klasse.query.all()
+    faecherListe = Fach.query.all()
+    bewertungsListe = Bewertung.query.all()
+    faecherBesucht = []
+    faecherNichtBesucht = []
+    schuelerList = Schueler.query.all()
+    pruefungListe = Pruefung.query.all()
+    lehrerListe = Lehrer.query.all()
+    origin = "profile"
+
+    # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
+    return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList,
+                           klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe,
+                           faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer,
+                           lehrerListe=lehrerListe, bewertungsListe=bewertungsListe, origin=origin)
+
+
 @app.route("/profile", methods=['POST', 'GET', 'DELETE'])
 @login_required
 def profile():
+
     if request.form.get('submit1') == 'Schüler hinzufügen':
         vorname = request.form.get('name')
         nachname = request.form.get('surname')

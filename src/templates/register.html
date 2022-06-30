@@ -33,18 +33,20 @@
                                required="required" minlength="2">
 
                         <label for="lastname">Nachname:</label>
-                        <input class="form-control" name="lastname" id="lastname" placeholder="Nachname">
+                        <input class="form-control" name="lastname" id="lastname" placeholder="Nachname"
+                               required="required" minlength="2">
 
                         <label for="email">E-Mail:</label>
-                        <input class="form-control" name="email" id="email"
-                               placeholder="E-Mail">
+                        <input type="email" class="form-control" name="email" id="email" placeholder="E-Mail"
+                               required="required">
 
                         <label for="password">Passwort:</label>
-                        <input type="password" class="form-control" name="password" id="password">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Passwort"
+                               required="required">
 
                         <label for="password_repeat">Passwort wiederholen:</label>
-                        <input type="password" class="form-control" name="password_repeat" id="password_repeat"
-                               placeholder="Passwort wiederholen">
+                        <input type="password" class="form-control" name="password_repeat" id="password_repeat" placeholder="Passwort wiederholen"
+                               required="required">
 
                         <input type="checkbox" id="isadmin" name="isadmin">
                         <label for="isAdmin">als Admin Account anlegen</label>

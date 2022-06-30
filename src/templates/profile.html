@@ -8,6 +8,7 @@
 {% include 'editClass.html' %}
 {% include 'editSubject.html' %}
 {% include 'editstudent.html'%}
+{% include 'editUserData.html'%}
 
 
 {% extends 'base.html' %}
@@ -119,6 +120,7 @@
                     </svg>
                     <div class="mt-3">
                         <h4>{{lehrer.vorname}} {{lehrer.nachname}}</h4>
+                        <h6>{{lehrer.email}}</h6>
                         <!--only show when teacher is admin-->
                         {%if lehrer.ist_administrator%}
                         <h6 style="font-style: italic">Admin </h6>
@@ -126,8 +128,9 @@
                         <ul style="list-style: none; padding-left: 0px">
 
                             <li class="mb-1">
-                                <button type="button" class="btn btn-primary btn-sm"
-                                        style="background-color: #006633; color: white">
+                                <button type="button" class="btn btn-primary btn-sm" id="editUserData{{current_user.id}}"
+                                        style="background-color: #006633; color: white" align="center"
+                                        justify data-toggle="modal" data-target="#editUserData" data-originOfAction="profile">
                                     Profil bearbeiten
                                 </button>
                             </li>
