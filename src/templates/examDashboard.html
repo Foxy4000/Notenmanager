@@ -67,6 +67,13 @@
 
                                 <ul style="list-style: none; padding-left: 0px">
 
+                                     
+                            <li class="mb-1">
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    style="background-color: #006633; color: white" onclick="window.location.href='{{url_for('exportGradelist', pruefung_id=pruefung.id)}}';">
+                                    Notenliste exportieren
+                                </button>
+                            </li>  
                                      <li class="mb-1">
                                         <a class="btn btn-primary btn-sm" style="background-color: #006633; color: white"
                                            data-toggle="modal" id="editExam{{pruefung.id}}" data-target="#editExam{{pruefung.id}}" data-originOfAction="profile">Prüfung bearbeiten</a>

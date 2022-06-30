@@ -192,7 +192,7 @@ def profile():
             note = notenliste[bewertungListe.index(schuelerId)]
 
             if note is not '':
-                note = float(note)
+                note = float(note.replace(",","."))
                 bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=note)
             else:
                 bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=id, punkte=None)
@@ -322,7 +322,7 @@ def exportGradelist(pruefung_id):
                                 note = nsNext.note
                         
                 
-                csvwriter.writerow([schueler.vorname, schueler.nachname, bewertung.punkte, note])
+                csvwriter.writerow([schueler.vorname, schueler.nachname, str(bewertung.punkte).replace(".",","), note])
             flash("Notenliste wurden exportiert")
     return redirect(url_for('profile'))
 
@@ -472,7 +472,7 @@ def editExam(pruefung_id):
 
     schuelerListe_ID = []
     for schueler in schuelerListe:
-        schueler_id = float(schueler)
+        schueler_id = int(schueler)
         schuelerListe_ID.append(schueler_id)
 
     bewertungListe_ID = []
@@ -490,10 +490,10 @@ def editExam(pruefung_id):
 
     for i in range(0, laenge):
         punkte = punkteListe[i]
-        schueler_id = float(schuelerListe[i])
+        schueler_id = int(schuelerListe[i])
         for bewertung in bewertungListe:
             if schueler_id == bewertung.schueler_id and punkte is not '' and punkte is not null:
-                bewertung.punkte = float(punkte)
+                bewertung.punkte = float(punkte.replace(",","."))
                 db.session.add(bewertung)
                 db.session.commit()
 
