@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 import tkinter as tk
+import ast
 from tkinter import filedialog
 
 from flask import Flask, render_template, Blueprint, request, flash, url_for
@@ -14,12 +15,10 @@ from pickle import NONE
 from sqlalchemy.sql.expression import null
 from collections.abc import Iterator
 
-# from . import db
-
 # Create a Flask Instance
-
 app = Flask(__name__)
 main = Blueprint('main', __name__)
+# Secret-Key for user password hash
 app.config['SECRET_KEY'] = "my super secret key"
 
 # Add Database
@@ -40,6 +39,46 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
+#Encrypt function for personal User and Student data
+def encrypt(string_value):
+    
+    string_value = string_value.replace("e", "•")
+    string_value = string_value.replace("n", "/")
+    string_value = string_value.replace("i", ",")
+    string_value = string_value.replace("s", "€")
+    string_value = string_value.replace("r", "─")
+    string_value = string_value.replace("u", "2")    
+    string_value = string_value.replace("t", "9")  
+    string_value = string_value.replace("a", "4")     
+    string_value = string_value.replace("d", "!")       
+    string_value = string_value.replace("h", "5")  
+        
+    encrypted_string_value = []
+    for character in string_value:
+        encrypted_string_value.append(ord(character))   
+    return(str(encrypted_string_value))
+
+#Decrypt function for personal User and Student data
+def decrypt(encrypted_string_value):
+    decrypted_string_value = ""
+    encrypted_string_value = ast.literal_eval(encrypted_string_value)
+    for ascii_value in encrypted_string_value:
+        decrypted_string_value = decrypted_string_value + chr(ascii_value)
+    
+    decrypted_string_value = decrypted_string_value.replace("•", "e")    
+    decrypted_string_value = decrypted_string_value.replace("/", "n") 
+    decrypted_string_value = decrypted_string_value.replace(",", "i") 
+    decrypted_string_value = decrypted_string_value.replace("€", "s") 
+    decrypted_string_value = decrypted_string_value.replace("─", "r")
+    decrypted_string_value = decrypted_string_value.replace("2", "u")    
+    decrypted_string_value = decrypted_string_value.replace("9", "t") 
+    decrypted_string_value = decrypted_string_value.replace("4", "a") 
+    decrypted_string_value = decrypted_string_value.replace("!", "d") 
+    decrypted_string_value = decrypted_string_value.replace("5", "h")    
+    
+    return(decrypted_string_value)
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return Lehrer.query.get(int(user_id))
@@ -54,9 +93,11 @@ def index():
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     if request.form.get('submit') == 'Login':
+
         email = request.form.get('email')
         password = request.form.get('password')
         # Look up User by Email Address
+        email = encrypt(email)
         user = Lehrer.query.filter_by(email=email).first()
         if user:
             # Check hashed password
@@ -85,8 +126,11 @@ def logout():
 def register():
     if request.form.get('submit5') == 'Account registrieren':
         vorname = request.form.get('firstname')
+        vorname = encrypt(vorname)
         nachname = request.form.get('lastname')
+        nachname = encrypt(nachname)
         email = request.form.get('email')
+        email = encrypt(email)
         passwort = request.form.get('password')
         lehrer = Lehrer.query.filter_by(email=email).first()
         if lehrer is None:
@@ -110,10 +154,15 @@ def register():
 @login_required
 def editUserData():
     lehrer = Lehrer.query.get_or_404(current_user.id)
+    lehrer.vorname = decrypt(lehrer.vorname)
+    lehrer.nachname = decrypt(lehrer.nachname)
     if request.method == 'POST':
         lehrer.vorname = request.form.get('vorname')
+        lehrer.vorname = encrypt(lehrer.vorname)
         lehrer.nachname = request.form.get('nachname')
+        lehrer.nachname = encrypt(lehrer.nachname)
         lehrer.email = request.form.get('email')
+        lehrer.email = encrypt(lehrer.email)
         passwort = request.form.get('passwort')
         # Hash the password
         lehrer.passwort = generate_password_hash(passwort, "sha256")
@@ -132,8 +181,15 @@ def editUserData():
     faecherBesucht = []
     faecherNichtBesucht = []
     schuelerList = Schueler.query.all()
+    for s in schuelerList:
+        s.vorname = decrypt(s.vorname)
+        s.nachname = decrypt(s.nachname)
     pruefungListe = Pruefung.query.all()
     lehrerListe = Lehrer.query.all()
+    for l in lehrerListe:
+        l.vorname = decrypt(l.vorname)
+        l.nachname = decrypt(l.nachname)
+        l.email = decrypt(l.email)
     origin = "profile"
 
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
@@ -149,14 +205,16 @@ def profile():
 
     if request.form.get('submit1') == 'Schüler hinzufügen':
         vorname = request.form.get('name')
+        vorname = encrypt(vorname)
         nachname = request.form.get('surname')
+        nachname = encrypt(nachname)
         # klasse = Klasse.query.order_by(Klasse.id.desc()).first() kann sobald die Klasse weiter definiert ist statt der Zeile drunter eingeführt werden
         klasse_id = request.form.get('klasse_id')  # klasse.id statt der request form
         schueler = Schueler(vorname=vorname, nachname=nachname, klasse_id=klasse_id)
         db.session.add(schueler)
         db.session.commit()
 
-        flash(vorname + " " + nachname + " wurde hinzugefügt!")
+        flash(decrypt(vorname) + " " + decrypt(nachname) + " wurde hinzugefügt!")
         schueler = Schueler.query.order_by(Schueler.id.desc()).first()
         schueler_id = schueler.id
 
@@ -251,9 +309,17 @@ def profile():
     faecherBesucht = []
     faecherNichtBesucht = []
     schuelerList = Schueler.query.all()
+    for s in schuelerList:
+        s.vorname = decrypt(s.vorname)
+        s.nachname = decrypt(s.nachname)
+    lehrerListe = Lehrer.query.all()
+    for l in lehrerListe:
+        l.vorname = decrypt(l.vorname)
+        l.nachname = decrypt(l.nachname)
+        l.email = decrypt(l.email)
     pruefungListe = Pruefung.query.all()
     lehrer = Lehrer.query.get_or_404(current_user.id)
-    lehrerListe = Lehrer.query.all()
+
     origin = "profile"
 
     # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
@@ -285,12 +351,12 @@ def exportStudentList(class_id):
                     lehrer = lehrerAusListe
 
             csvwriter.writerow(["Klasse:", klasse.bezeichnung])
-            csvwriter.writerow(["Lehrer:", lehrer.vorname, lehrer.nachname])
+            csvwriter.writerow(["Lehrer:", decrypt(lehrer.vorname), decrypt(lehrer.nachname)])
             csvwriter.writerow([])
             csvwriter.writerow(["Vorname", "Nachname"])
 
             for schueler in schuelerListe:
-                csvwriter.writerow([schueler.vorname, schueler.nachname])
+                csvwriter.writerow([decrypt(schueler.vorname), decrypt(schueler.nachname)])
             flash("Schülerliste wurden exportiert")
     return redirect(url_for('profile'))
 
@@ -360,7 +426,7 @@ def exportGradelist(pruefung_id):
                                 note = nsNext.note
                         
                 
-                csvwriter.writerow([schueler.vorname, schueler.nachname, str(bewertung.punkte).replace(".",","), note])
+                csvwriter.writerow([decrypt(schueler.vorname), decrypt(schueler.nachname), str(bewertung.punkte).replace(".",","), note])
             flash("Notenliste wurden exportiert")
     return redirect(url_for('profile'))
 
@@ -379,8 +445,13 @@ def searchStudent():
 @app.route('/profile/viewStudent/<student_id>', methods=['GET', 'POST'])
 @login_required
 def viewStudent(student_id):
-    schueler = Schueler.query.get_or_404(student_id)
+    
+
     schuelerListe = Schueler.query.all()
+    for s in schuelerListe:
+        s.vorname = decrypt(s.vorname)
+        s.nachname = decrypt(s.nachname)
+    schueler = Schueler.query.get_or_404(student_id)
     klassenListe = Klasse.query.all()
     faecherListe = Fach.query.all()
     notenschluesselListe = Notenschluessel.query.all()
@@ -423,7 +494,9 @@ def editStudent(student_id):
     if request.method == 'POST':
         origin = request.form.get('origin')
         firstname = request.form.get('vorname')
+        firstname = encrypt(firstname)
         lastname = request.form.get('nachname')
+        lastname = encrypt(lastname)
         klasse_id = request.form.get('klasse_id')
         faecher = request.form.getlist('fach_id')
         for belegung in belegungen:
@@ -439,7 +512,7 @@ def editStudent(student_id):
         schueler.klasse_id = klasse_id
         db.session.add(schueler)
         db.session.commit()
-        flash(schueler_alt.vorname + " " + schueler_alt.nachname + " wurde bearbeitet")
+        flash(decrypt(schueler_alt.vorname) + " " + decrypt(schueler_alt.nachname) + " wurde bearbeitet")
     if origin == "profile":
         return redirect(url_for('profile'))
     else:
@@ -662,10 +735,17 @@ def viewClass(klasse_id):
                 examenDerKlasse.append(pruefung)
 
     schuelerList = Schueler.query.all()
+    for s in schuelerList:
+        s.vorname = decrypt(s.vorname)
+        s.nachname = decrypt(s.nachname)
     notenschluesselListe = Notenschluessel.query.all()
 
     bewertungsListe = Bewertung.query.all()
     lehrerListe = Lehrer.query.all()
+    for l in lehrerListe:
+        l.vorname = decrypt(l.vorname)
+        l.nachname = decrypt(l.nachname)
+        l.email = decrypt(l.email)
     klassenListe = Klasse.query.all()
 
     origin = "class"
@@ -684,6 +764,9 @@ def viewSubject(subject_id):
     pruefungListe = Pruefung.query.all()
     belegungListe = Belegung.query.all()
     schuelerList = Schueler.query.all()
+    for s in schuelerList:
+        s.vorname = decrypt(s.vorname)
+        s.nachname = decrypt(s.nachname)
     klassenListe = Klasse.query.all()
 
     pruefungenDesFaches = []
@@ -708,6 +791,10 @@ def viewSubject(subject_id):
     notenschluesselListe = Notenschluessel.query.all()
     bewertungsListe = Bewertung.query.all()
     lehrerListe = Lehrer.query.all()
+    for l in lehrerListe:
+        l.vorname = decrypt(l.vorname)
+        l.nachname = decrypt(l.nachname)
+        l.email = decrypt(l.email)
     faecherListe = Fach.query.all()
 
 
@@ -733,6 +820,9 @@ def viewExam(pruefung_id):
     notenschluesselListe = db.session.query(Notenschluessel).filter(Notenschluessel.pruefung_id == pruefung_id)
     notenliste = list(notenschluesselListe)
     schuelerList = Schueler.query.all()
+    for s in schuelerList:
+        s.vorname = decrypt(s.vorname)
+        s.nachname = decrypt(s.nachname)
     belegungListe = Belegung.query.all()
     faecherListe = Fach.query.all()
     bewertungsListe = Bewertung.query.all()

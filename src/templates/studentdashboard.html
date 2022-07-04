@@ -51,48 +51,37 @@
                                                         {%for bewertung in bewertungen%}
                                                             {%if pruefung.Belegung.fach_id == fach.Fach.id%}
                                                             {%if bewertung.Bewertung.pruefung_id== pruefung.Pruefung.id%}
-
-
                                                             <tr class="list-group-item-action" >
-
-
-
                                                                             <td>
                                                                                 <a href="{{url_for('viewExam', pruefung_id=pruefung.Pruefung.id)}}" style="text-decoration: none; color: black">
                                                                                 <h7 style="width: 300px">{{pruefung.Pruefung.bezeichnung}}</h7>
-
                                                                             </td>
-                                                                            <td>
+                                                                           
                                                                             {% if bewertung.Bewertung.punkte is not none %}
-                                                                            	<h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
-                                                                            {% endif %}
-                                                                            </td>
-                                                                            <td>
-												                           	{% if bewertung.Bewertung.punkte is not none %}
+	                                                                            <td>
+	                                                                            	<h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
+	                                                                            </td>
+	                                                                            <td>
 																				{% for notenschluessel in notenschluesselListe %}
-																				{% if notenschluessel.pruefung_id == pruefung.Pruefung.id %}
-																					{% if bewertung.Bewertung.punkte <= notenschluessel.punkte_obergrenze %}
-																						{% if loop.nextitem is defined %}
-																							{% if bewertung.Bewertung.punkte > loop.nextitem.punkte_obergrenze %}
+																					{% if notenschluessel.pruefung_id == pruefung.Pruefung.id %}
+																						{% if bewertung.Bewertung.punkte <= notenschluessel.punkte_obergrenze %}
+																							{% if loop.nextitem is defined %}
+																								{% if bewertung.Bewertung.punkte > loop.nextitem.punkte_obergrenze %}
+																									<h7 style="color: gray">{{notenschluessel.note}}</h7>
+																								{% endif %}	
+																							{% endif %}
+																							{% if notenschluessel.note == 6 %}
 																								<h7 style="color: gray">{{notenschluessel.note}}</h7>
-																							{% endif %}	
-																						{% else %}
-																							<h7 style="color: gray">{{notenschluessel.note}}</h7>
+																							{% endif %}
 																						{% endif %}
-																					
 																					{% endif %}
-																				{% endif %}
 																				{% endfor %}
 																			{% endif %} 
 																			</td>
-
-
-                                                            </tr>
-                                                            
-
-                                                       {%endif%}
-                                                       {%endif%}
-                                                       {%endfor%}
+			                                                            </tr>
+			                                                       {%endif%}
+		                                                       {%endif%}
+	                                                       {%endfor%}
                                                        {%endfor%}
                                                    </ul>
                                                   
