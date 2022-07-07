@@ -560,6 +560,7 @@ def editClass(klasse_id):
 def editExam(pruefung_id):
     pruefung = Pruefung.query.get_or_404(pruefung_id)
     bezeichnung = request.form.get('bezeichnung')
+    pruefung.bezeichnung = bezeichnung
     notizen = request.form.get('beschreibung')
     pruefung.notizen = notizen
     db.session.add(pruefung)
