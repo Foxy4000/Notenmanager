@@ -560,6 +560,7 @@ def editClass(klasse_id):
 def editExam(pruefung_id):
     pruefung = Pruefung.query.get_or_404(pruefung_id)
     bezeichnung = request.form.get('bezeichnung')
+    pruefung.bezeichnung = bezeichnung
     notizen = request.form.get('beschreibung')
     pruefung.notizen = notizen
     db.session.add(pruefung)
@@ -593,11 +594,20 @@ def editExam(pruefung_id):
 
     for schueler_id in schuelerListe_ID:
         if schueler_id not in bewertungListe_ID:
-            bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=schueler_id, punkte=null)
+            bewertung = Bewertung(pruefung_id=pruefung_id, schueler_id=schueler_id, punkte=None)
             db.session.add(bewertung)
             db.session.commit()
+    
+    for bewertung in bewertungListe_ID:
+        if bewertung not in schuelerListe_ID:
+            bewertung = Bewertung.query.get_or_404((pruefung_id, bewertung))
+            if bewertung:
+                db.session.delete(bewertung)
+                db.session.commit()
 
     bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
+    
+    
 
     for i in range(0, laenge):
         punkte = punkteListe[i]

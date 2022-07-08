@@ -33,7 +33,8 @@
                                     <input class="form-control" style="width: 300px" name="bezeichnung" id="bezeichnung"
                                            placeholder="Name der Prüfung bearbeiten" required="required"
                                            value="{{ pruefung.bezeichnung }}">
-                                           
+                                    
+                                    <!-- Gesamtpunktzahl / Maximalpunkzahl anzeigen -->
 									{% for punkte_obergrenze in notenschluesselListe %}
 		                                    {% if punkte_obergrenze.pruefung_id == pruefung.id %}
 			                                    {% if punkte_obergrenze.note == 1%}                                    
@@ -42,8 +43,7 @@
                                            		{% endif %}
                                            	{% endif %}
                                     {% endfor %}
-                                           
-                                           
+     
                                 </div>
 
                                 <label for="beschreibung" style="margin-bottom:
@@ -69,6 +69,8 @@
                                     <div class="col">
                                         <b>Punkte Obergrenze:</b>
                                     </div>
+                                    
+                                    <!-- Notenschlüssel anzeigen -->
 									{% for punkte_obergrenze in notenschluesselListe %}
 	                                    {% for i in range(7)%}
 		                                    {% if punkte_obergrenze.pruefung_id == pruefung.id %}
@@ -99,6 +101,8 @@
                                         <b>Punkte</b>
                                         </div>
                                         <ul>
+                                        
+                                        <!-- Schüler des Faches mit Bewertung auflisten -->
                                         	{% set ns = namespace(schuelerOhneBewertung=[]) %}
                                         	{% set ns2 = namespace(schuelerMitBewertung=[]) %}
 											{% for schueler in schuelerList %}
@@ -111,10 +115,8 @@
 														{% if schueler.id == belegung.schueler_id %}
 														 {% for bewertung in bewertungsListe %}
 														 	{% if bewertung.pruefung_id == pruefung.id %}
-														 		{% if bewertung.schueler_id == schueler.id %}
-																	
+														 		{% if bewertung.schueler_id == schueler.id %}																
 																<li class="mb-1" style="list-style: none" >
-
                                                                     <div class="d-flex justify-content-between">
                                                                         <div class="d-flex">
                                                                              <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam1{{pruefung.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." checked>
@@ -126,7 +128,6 @@
                                                                                     document.getElementById('achievedPoints1{{pruefung.id}}{{schueler.id}}').disabled=!this.checked; 
                                                                                    
                                                                                     $('#achievedPoints1{{pruefung.id}}{{schueler.id}}').val($('').val());                                                                                     
-  
                                                                             }
                                                                         </script>
                                                                     </div>
@@ -149,41 +150,35 @@
 													{% endfor %}
 												{% endfor %}
 											{% endfor %}
+											
+											<!-- Schüler des Faches ohne Bewertung auflisten -->
 											{% for schueler in ns.schuelerOhneBewertung %}
 												{% if schueler not in ns2.schuelerMitBewertung %}
-																<li class="mb-1" style="list-style: none" >
+													<li class="mb-1" style="list-style: none" >
 
-                                                                    <div class="d-flex justify-content-between">
-                                                                        <div class="d-flex">
-                                                                             <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam2{{pruefung.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." unchecked>
-                                                                            {{schueler.vorname}} {{schueler.nachname}}
-                                                                        </div>
-                                                                     		<input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints2{{pruefung.id}}{{schueler.id}}" value="" disabled>
-                                                                        <script>
-                                                                                    document.getElementById('addToExam2{{pruefung.id}}{{schueler.id}}').onchange = function (){
-                                                                                    document.getElementById('achievedPoints2{{pruefung.id}}{{schueler.id}}').disabled=!this.checked;
-                                                                            }
-                                                                        </script>
-                                                                    </div>
-                                                                </li>
+                                                     	<div class="d-flex justify-content-between">
+	                                                        <div class="d-flex">
+		                                                        <input class="form-check-input me-1" type="checkbox" name="examStudent" id="addToExam2{{pruefung.id}}{{schueler.id}}" value="{{schueler.id}}"  aria-label="..." unchecked>
+		                                                        {{schueler.vorname}} {{schueler.nachname}}
+	                                                        </div>
+                                                        	<input class="form-control" style="width: 100px; text-align: center" name="achievedPoints" id="achievedPoints2{{pruefung.id}}{{schueler.id}}" value="" disabled>
+	                                                        <script>
+		                                                        document.getElementById('addToExam2{{pruefung.id}}{{schueler.id}}').onchange = function (){
+		                                                        document.getElementById('achievedPoints2{{pruefung.id}}{{schueler.id}}').disabled=!this.checked;
+		                                                        }
+	                                                        </script>
+                                                        </div>
+                                                    </li>
                                              	{% endif %}
                                              {% endfor %}											
-											
-											
                                         </ul>							
-
-
-						
-                        </div>
-                    </div>
+                        		</div>
+                    	</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
-
-
-                                <input type="submit" class="btn btn-primary"  name="editExam" value="Prüfung bearbeiten" style="background-color: #006633"
-                                           onclick="return confirm('Änderungen an Prüfung {{pruefung.bezeichnung}} speichern? ')">
-                                           					
+                    <input type="submit" class="btn btn-primary"  name="editExam" value="Prüfung bearbeiten" style="background-color: #006633"
+                           onclick="return confirm('Änderungen an Prüfung {{pruefung.bezeichnung}} speichern? ')">   					
                 </div>
             </form>
         </div>
