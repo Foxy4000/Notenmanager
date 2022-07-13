@@ -42,6 +42,7 @@ login_manager.login_view = 'login'
 #Encrypt function for personal User and Student data
 def encrypt(string_value):
     
+    #Tauscht Char-Werte aus um die Wörter unkenntlich zu machen
     string_value = string_value.replace("e", "•")
     string_value = string_value.replace("n", "/")
     string_value = string_value.replace("i", ",")
@@ -52,7 +53,8 @@ def encrypt(string_value):
     string_value = string_value.replace("a", "4")     
     string_value = string_value.replace("d", "!")       
     string_value = string_value.replace("h", "5")  
-        
+     
+    #Speichert die veränderten Wörter in ASCII Format    
     encrypted_string_value = []
     for character in string_value:
         encrypted_string_value.append(ord(character))   
@@ -61,10 +63,13 @@ def encrypt(string_value):
 #Decrypt function for personal User and Student data
 def decrypt(encrypted_string_value):
     decrypted_string_value = ""
+    
+    #Wandelt ASCII Format zurück
     encrypted_string_value = ast.literal_eval(encrypted_string_value)
     for ascii_value in encrypted_string_value:
         decrypted_string_value = decrypted_string_value + chr(ascii_value)
     
+    #weißt den veränderten Char Werten ihren ursprünglichen Wert zu
     decrypted_string_value = decrypted_string_value.replace("•", "e")    
     decrypted_string_value = decrypted_string_value.replace("/", "n") 
     decrypted_string_value = decrypted_string_value.replace(",", "i") 
@@ -272,6 +277,7 @@ def profile():
                 db.session.commit()
 
             db.session.commit()
+            
     if request.form.get('submit1') == 'Prüfung hinzufügen':
         bezeichnung = request.form.get('bezeichnung')
         notizen = request.form.get('beschreibung')
@@ -334,12 +340,14 @@ def profile():
 def exportStudentList(class_id):
     klasse = Klasse.query.get_or_404(class_id)
 
+    #öffnet externes Fenster zum auswählen des Speicherorts und der Speicherdetails
     filename = tk.filedialog.asksaveasfilename(
         title='Speichern als...',
         filetypes=filetypes,
         defaultextension='.csv'
     )
-
+    
+    #definiert Grundstruktur der Exportdatei
     if filename != '':
         with open(filename, 'w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=';')
@@ -355,6 +363,7 @@ def exportStudentList(class_id):
             csvwriter.writerow([])
             csvwriter.writerow(["Vorname", "Nachname"])
 
+            #Schreibt Daten in die Exportdatei
             for schueler in schuelerListe:
                 csvwriter.writerow([decrypt(schueler.vorname), decrypt(schueler.nachname)])
             flash("Schülerliste wurden exportiert")
@@ -395,12 +404,14 @@ def exportGradelist(pruefung_id):
     bewertungen = Bewertung.query.filter_by(pruefung_id=pruefung_id)
     notenschluessel = Notenschluessel.query.filter_by(pruefung_id=pruefung_id)
 
+    #öffnet externes Fenster zum auswählen des Speicherorts und der Speicherdetails
     filename = tk.filedialog.asksaveasfilename(
         title='Speichern als...',
         filetypes=filetypes,
         defaultextension='.csv'
     )
-
+    
+    #definiert Grundstruktur der Exportdatei
     if filename != '':
         with open(filename, 'w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=';')
@@ -425,7 +436,7 @@ def exportGradelist(pruefung_id):
                             else:
                                 note = nsNext.note
                         
-                
+                #Schreibt Daten in die Exportdatei
                 csvwriter.writerow([decrypt(schueler.vorname), decrypt(schueler.nachname), str(bewertung.punkte).replace(".",","), note])
             flash("Notenliste wurden exportiert")
     return redirect(url_for('profile'))
@@ -553,8 +564,8 @@ def editClass(klasse_id):
         return redirect(url_for('profile'))
     else:
         return redirect(url_for('viewClass', klasse_id=klasse_id))
-
-
+    
+    
 @app.route('/profile/viewClass/editExam/<pruefung_id>', methods=['POST', 'GET'])
 @login_required
 def editExam(pruefung_id):
@@ -566,6 +577,7 @@ def editExam(pruefung_id):
     db.session.add(pruefung)
     db.session.commit()
 
+    
     notenschluesselListe = Notenschluessel.query.filter_by(pruefung_id=pruefung_id)
     punkteObergrenze = request.form.getlist('punkteObergrenze')
     i = 1
@@ -582,6 +594,7 @@ def editExam(pruefung_id):
     bewertungListe = Bewertung.query.filter_by(pruefung_id=pruefung_id)
     laenge = len(schuelerListe)
 
+    
     schuelerListe_ID = []
     for schueler in schuelerListe:
         schueler_id = int(schueler)
@@ -809,12 +822,13 @@ def viewSubject(subject_id):
 
 
     origin = "subject"
+    origin2 = "profile"
 
     return render_template("subjectDashboard.html", fach=fach, schuelerDesFaches=schuelerDesFaches,
                            klassenDesFaches=klassenDesFaches, pruefungenDesFaches=pruefungenDesFaches,
                            schuelerList=schuelerList, belegungListe=belegungListe, pruefungListe=pruefungListe,
                            faecherListe=faecherListe, bewertungsListe=bewertungsListe, lehrerListe=lehrerListe,
-                           notenschluesselListe=notenschluesselListe, origin=origin, klassenListe=klassenListe)
+                           notenschluesselListe=notenschluesselListe, origin=origin, origin2=origin2, klassenListe=klassenListe)
 
 
 

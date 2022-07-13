@@ -59,7 +59,9 @@
                 <div class="row">
                     <div>
                         <ul style="list-style: none; padding-left: 0px">
+                       
                         {%for klasse in klassenListe%}
+                        {% if current_user.ist_administrator or current_user.id == klasse.lehrer_id%}
                             <li class="d-flex justify-content-between align-items-center">
                                 <a href="{{url_for('viewClass', klasse_id=klasse.id)}}" style="text-decoration: none; color: black">
                                 <h6 class="mb-0" style="width:400px">{{klasse.bezeichnung}}</h6>
@@ -102,7 +104,9 @@
                                 </ul>
                             </li>
                             <hr>
+                            {% endif %}
                             {%endfor%}
+                            
                         </ul>
                     </div>
                 </div>
@@ -185,6 +189,7 @@
                     <div>
                         <ul style="list-style: none; padding-left: 0px">
                             {%for fach in faecherListe%}
+                            {% if current_user.ist_administrator or current_user.id == fach.lehrer_id%}
                             <li class="d-flex justify-content-between align-items-center">
                                 <a href="{{url_for('viewSubject', subject_id = fach.id)}}" style="text-decoration: none; color: black">
                                 <h6 class="mb-0" style="width:400px">{{fach.bezeichnung}}</h6>
@@ -233,6 +238,7 @@
                                 </div>
                             </li>
                             <hr>
+                            {% endif %}
                             {%endfor%}
                         </ul>
                     </div>
@@ -251,13 +257,23 @@
 				<div class="form-group" method="POST">				
 					<select class="selectpicker" data-live-search="true" name="searched" id="searched" title ="Schüler auswählen">																							
 					<option></option>
-					{% for schueler in schuelerList %}
-						<option value={{schueler.id}} >{{schueler.vorname}} {{schueler.nachname}} </option>
+                    {% set ns = namespace(klassen_id=[]) %}
+                    {% for klasse in klassenListe %}
+                    	{% if klasse.lehrer_id == current_user.id %}
+                    		{% set ns.klassen_id = ns.klassen_id + [klasse.id] %}
+                    	{% endif %}
+                    {% endfor %}
+                    {% set ns2 = namespace(schueler_Anzahl=[]) %}
+                    {% for schueler in schuelerList %}
+                    	<option value={{schueler.id}} >{{schueler.vorname}} {{schueler.nachname}} </option>
+                    	{% if current_user.ist_administrator or schueler.klasse_id in ns.klassen_id %}
+							{% set ns2.schueler_Anzahl = ns2.schueler_Anzahl + [schueler.id] %}
+						{% endif %}
 					{% endfor %}
 					</select>
 				</div>                
 
-                <h5>{{schuelerList|count}}</h5>
+                <h5>{{ns2.schueler_Anzahl|count}}</h5>
                 
             </div>
 
@@ -269,7 +285,15 @@
                 <div class="row">
                     <div>
                         <ul style="list-style: none; padding-left: 0px">
-                            {%for schueler in schuelerList%}
+                        
+                        	{% set ns = namespace(klassen_id=[]) %}
+                        	{% for klasse in klassenListe %}
+                        		{% if klasse.lehrer_id == current_user.id %}
+                        			{% set ns.klassen_id = ns.klassen_id + [klasse.id] %}
+                        		{% endif %}
+                        	{% endfor %}
+                            {% for schueler in schuelerList %}
+                            {% if current_user.ist_administrator or schueler.klasse_id in ns.klassen_id %}
                             <li class="d-flex justify-content-between align-items-center list-group-item-action">
                                 <a href="{{url_for('viewStudent', student_id=schueler.id)}}" style="text-decoration: none; color: black">
                                 <h6 class="mb-0" style="width:400px">{{schueler.vorname}} {{schueler.nachname}}</h6>
@@ -314,7 +338,7 @@
                                 {%endif%}
                             </li>
                             <hr>
-
+							{% endif %}
                             {%endfor%}
                         </ul>
                     </div>
