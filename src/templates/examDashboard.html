@@ -111,7 +111,7 @@
                 <div style="width: 200px">
                     Name
                 </div>
-                <div>
+                <div style="margin-left: 20px">
                     Punkte
                 </div>
                 <div>
@@ -132,7 +132,7 @@
                                 <div>
                                     <h7 style="color: gray">{{bewertung.Bewertung.punkte}}</h7>
                                     </div>
-                                <div>
+                                <div style="margin-right: 10px">
                                         {%for notenschluessel in notenschluesselListe%}
                                                 {% if bewertung.Bewertung.punkte <= notenschluessel.punkte_obergrenze %}
                                                     {% if loop.nextitem is defined %}
