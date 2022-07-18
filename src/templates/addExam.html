@@ -78,6 +78,7 @@
                                         <b>Punkte</b>
                                         </div>
                                         <ul>
+                                        <!-- Gibt anwählbare Felder für die Schülerauswahl zurück -->
 											{% for schueler in schuelerList %}
 												{% for belegung in belegungListe %}
 													{% if belegung.fach_id == fach.id %}

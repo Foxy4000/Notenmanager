@@ -89,7 +89,7 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    {% endif %}
+                                    
 
                                     <form method="POST">
                                         <a href="{{ url_for('deleteClass', klasse_id=klasse.id) }}" class="dropdown-item"
@@ -98,6 +98,7 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
+                                    {% endif %}
                                     <li>
                                         <a class="dropdown-item" href="{{url_for('exportStudentList', class_id=klasse.id)}}">Schülerliste exportieren</a>
                                     </li>
@@ -220,7 +221,7 @@
                                            data=lehrerListe, belegungList, schuelerList>
                                             Fach bearbeiten
                                         </a>
-
+										{% if current_user.ist_administrator %}
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
@@ -234,6 +235,7 @@
                                             </form>
                                             <a/>
                                         </a>
+                                       {% endif %}
                                     </ul>
                                 </div>
                             </li>
@@ -254,9 +256,7 @@
                 <h5>Schüler</h5>
                 
 				
-				<div class="form-group" method="POST">				
-					<select class="selectpicker" data-live-search="true" name="searched" id="searched" title ="Schüler auswählen">																							
-					<option></option>
+
                     {% set ns = namespace(klassen_id=[]) %}
                     {% for klasse in klassenListe %}
                     	{% if klasse.lehrer_id == current_user.id %}
@@ -265,13 +265,12 @@
                     {% endfor %}
                     {% set ns2 = namespace(schueler_Anzahl=[]) %}
                     {% for schueler in schuelerList %}
-                    	<option value={{schueler.id}} >{{schueler.vorname}} {{schueler.nachname}} </option>
+
                     	{% if current_user.ist_administrator or schueler.klasse_id in ns.klassen_id %}
 							{% set ns2.schueler_Anzahl = ns2.schueler_Anzahl + [schueler.id] %}
 						{% endif %}
 					{% endfor %}
-					</select>
-				</div>                
+               
 
                 <h5>{{ns2.schueler_Anzahl|count}}</h5>
                 

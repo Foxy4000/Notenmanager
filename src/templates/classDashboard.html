@@ -141,6 +141,7 @@
                                 <a href="{{url_for('viewSubject', subject_id = fach.id)}}" style="text-decoration: none; color: black">
                                     <h6 class="mb-0" style="width:400px">{{fach.bezeichnung}}</h6>
                                 </a>
+                                {% if current_user.ist_administrator %}
                                 <div>
                                     <a class="nav-link" href="#" role="button dropend" data-bs-toggle="dropdown"
                                        aria-expanded="false">
@@ -150,17 +151,8 @@
                                         </svg>
                                     </a>
 
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                         <a class="dropdown-item" data-toggle="modal" id="addExam {{fach.id}}"
-                                           data-target="#addExam {{fach.id}}" data-originOfAction="class"
-                                           data=lehrerListe, belegungListe, schuelerList, faecherListe>
-                                            Prüfung hinzufügen
-                                         </a>  
-                                        {% if current_user.ist_administrator %}                                  
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>                                     
-                                    	
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">  
+                                                                          
                                         <a class="dropdown-item" data-toggle="modal"
                                            data-target="#editSubject {{fach.id}}"
                                            data=lehrerListe, belegungList, schuelerList>
@@ -178,9 +170,10 @@
                                                        onclick="return confirm('Fach {{fach.bezeichnung}} endgültig löschen?')">
                                             </form>
                                         </a>
-                                     	{% endif %}
+                                     	
                                     </ul>
                                 </div>
+                                {% endif %}
                             </li>
                             <hr>
                             {%endfor%}
