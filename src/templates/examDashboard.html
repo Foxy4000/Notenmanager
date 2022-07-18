@@ -78,6 +78,10 @@
                                         <a class="btn btn-primary btn-sm" style="background-color: #006633; color: white"
                                            data-toggle="modal" id="editExam{{pruefung.id}}" data-target="#editExam{{pruefung.id}}" data-originOfAction="profile">Prüfung bearbeiten</a>
                                     </li>
+                                    <form method="POST">
+                                        <a href="{{ url_for('deletePruefung', pruefung_id=pruefung.id) }}" class="btn btn-primary btn-sm" style="background-color: #006633; color: white"
+                                           onclick="return confirm('Prüfung endgültig löschen?')">Prüfung löschen</a>
+                                    </form>
 
                                 </ul>
 
