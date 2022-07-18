@@ -3,12 +3,6 @@ body{
     padding:0;
     text-align: center;
     color: white;
-
-    /*background-image: url("/static/classroom.jpg");
-    background-position: center;
-    background-size: auto;
-    background-repeat: no-repeat;
-    background-attachment: fixed;*/
 }
 
 body::before{
@@ -18,16 +12,12 @@ body::before{
       background-size: auto;
       background-attachment: fixed;
 
-
       position: absolute;
       top: 0px;
       right: 0px;
       bottom: 0px;
       left: 0px;
 
-     /* opacity: 0.75;*/
-
-      /*filter: blur(5px);*/
       filter: blur(5px);
 
 }
@@ -42,7 +32,7 @@ body::before{
 }
 
 .text{
-    font-family: "Annie Use Your Telescope";
+     font-family: "Annie Use Your Telescope";
 
      padding-top: 90px;
      padding-left: 50px;
