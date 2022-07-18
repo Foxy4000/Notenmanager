@@ -369,7 +369,7 @@ def exportStudentList(class_id):
             flash("Schülerliste wurden exportiert")
     return redirect(url_for('profile'))
 
-
+#Iterator Funktionen als Workaround implementiert
 class hn_wrapper(Iterator):
   def __init__(self, it):
     self.it = iter(it)
@@ -425,6 +425,7 @@ def exportGradelist(pruefung_id):
             for bewertung in bewertungen:
                 schueler = Schueler.query.get_or_404(bewertung.schueler_id)
                 
+                #Iteriert für Notenschlüssel und weist so die Note zu den Punkten zu
                 note=""
                 notenschluesselIt = hn_wrapper(notenschluessel)
                 for ns in notenschluesselIt:

@@ -109,10 +109,14 @@
                     <div>
                         <ul style="list-style: none; padding-left: 0px">
                             {%for klasse in klassenDesFaches%}
+                            {% if klasse.lehrer_id == current_user.id or current_user.ist_administrator %}
                             <li class="d-flex justify-content-between align-items-center">
                                 <a href="{{url_for('viewClass', klasse_id = klasse.id)}}" style="text-decoration: none; color: black">
                                     <h6 class="mb-0" style="width:400px">{{klasse.bezeichnung}}</h6>
                                 </a>
+                              {% else %}
+                              	<h6 class="mb-0" style="width:400px">{{klasse.bezeichnung}}</h6>
+                              {% endif %}
                                 <div>
                                 {% if current_user.ist_administrator %}
                                     <a class="nav-link" href="#" role="button dropend" data-bs-toggle="dropdown"
