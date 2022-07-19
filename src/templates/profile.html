@@ -130,7 +130,7 @@
                         <ul style="list-style: none; padding-left: 0px;margin-bottom: 0px">
                         
                         <!--only show when teacher is admin-->
-                        {%if lehrer.ist_administrator%}
+                        
                         <h6 style="font-style: italic">Admin </h6>
                         
                         
@@ -142,7 +142,7 @@
                                     Profil bearbeiten
                                 </button>
                             </li>
-                            
+                            {%if lehrer.ist_administrator%}
                             <li class="mb-1">
                                 <button type="button" class="btn btn-primary btn-sm"
                                         style="background-color: #006633; color: white" align="center"
