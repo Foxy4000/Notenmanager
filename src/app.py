@@ -197,7 +197,6 @@ def editUserData():
         l.email = decrypt(l.email)
     origin = "profile"
 
-    # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
     return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList,
                            klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe,
                            faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer,
@@ -213,8 +212,8 @@ def profile():
         vorname = encrypt(vorname)
         nachname = request.form.get('surname')
         nachname = encrypt(nachname)
-        # klasse = Klasse.query.order_by(Klasse.id.desc()).first() kann sobald die Klasse weiter definiert ist statt der Zeile drunter eingeführt werden
-        klasse_id = request.form.get('klasse_id')  # klasse.id statt der request form
+
+        klasse_id = request.form.get('klasse_id')
         schueler = Schueler(vorname=vorname, nachname=nachname, klasse_id=klasse_id)
         db.session.add(schueler)
         db.session.commit()
@@ -328,7 +327,6 @@ def profile():
 
     origin = "profile"
 
-    # students= Session.query(Lehrer, Schueler, Klasse).filter(Lehrer.id== Klasse.lehrer_id ).filter(Schueler.klasse_id==Klasse.id).all()
     return render_template("profile.html", pruefungListe=pruefungListe, schuelerList=schuelerList,
                            klassenListe=klassenListe, belegungListe=belegungListe, faecherListe=faecherListe,
                            faecherBesucht=faecherBesucht, faecherNichtBesucht=faecherNichtBesucht, lehrer=lehrer,
@@ -639,8 +637,6 @@ def editExam(pruefung_id):
 @login_required
 def deleteStudent(student_id):
     schueler = Schueler.query.get_or_404(student_id)
-    # belegungen = Belegung.query.filter.by(schueler_id=student_id)
-    # bewertungen = Bewertung.query.filter.by(schueler_id=student_id)
     db.session.delete(schueler)
     db.session.commit()
     flash(schueler.vorname + " " + schueler.nachname + " wurde entfernt")
@@ -890,17 +886,6 @@ class Lehrer(db.Model, UserMixin):
     nachname = db.Column(db.String(120), nullable=True)
     ist_administrator = db.Column(db.Boolean, nullable=True)
 
-    # Passwort
-    # @property
-    # def passwort(self):
-    #   raise AttributeError('Password is not a readable Attribute!')
-
-    # @passwort.setter
-    # def passwort(self, pwd):
-    #   self.passwort = generate_password_hash(pwd)
-
-    # def verify_password(self, pwd):
-    #   return check_password_hash(self.passwort, pwd)
 
 
 class Notenschluessel(db.Model):
